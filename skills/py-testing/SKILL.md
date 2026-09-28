@@ -39,7 +39,7 @@ def db_connection():
     conn.close()
 ```
 
-**conftest.py** — put shared fixtures here, not in individual test files. pytest discovers conftest.py automatically at every directory level.
+**conftest.py**: put shared fixtures here, not in individual test files. pytest discovers conftest.py automatically at every directory level.
 
 ## Parametrize
 
@@ -66,7 +66,7 @@ Each case appears as a separate test in the output with its own pass/fail status
 
 ## Mocking: patch where it's used, not where it's defined
 
-The most common pytest mistake. `patch` replaces the name in the module under test — not in the module where the object is defined.
+The most common pytest mistake. `patch` replaces the name in the module under test, not in the module where the object is defined.
 
 ```python
 # myapp/users.py
@@ -106,7 +106,7 @@ def test_register(mocker):
     mock_send.assert_called_once_with('a@example.com')
 ```
 
-No `@patch` decorator, no manual cleanup — the mock is restored after the test automatically.
+No `@patch` decorator, no manual cleanup: the mock is restored after the test automatically.
 
 ## Testing async code
 
@@ -153,11 +153,11 @@ def test_reads_env_var(monkeypatch):
     # env var is restored automatically after the test
 ```
 
-Prefer `monkeypatch` over `os.environ['KEY'] = 'value'` in tests — it restores state automatically and is safe across parallel test runs.
+Prefer `monkeypatch` over `os.environ['KEY'] = 'value'` in tests; it restores state automatically and is safe across parallel test runs.
 
 ## Test the public interface
 
-Test behavior through the public API, not internal implementation. Private methods are an implementation detail — they change without notice and shouldn't need direct tests.
+Test behavior through the public API, not internal implementation. Private methods are an implementation detail. They change without notice and shouldn't need direct tests.
 
 ```python
 # Bad: testing a private method directly

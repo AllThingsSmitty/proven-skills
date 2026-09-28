@@ -5,7 +5,7 @@ description: "Production Go operations advisor. Always use this skill when deplo
 
 ## Graceful Shutdown
 
-Never use `log.Fatal(http.ListenAndServe(...))`. It makes your service unkillable gracefully — Kubernetes sends SIGTERM and your pods drop in-flight requests.
+Never use `log.Fatal(http.ListenAndServe(...))`. It makes your service unkillable gracefully: Kubernetes sends SIGTERM and your pods drop in-flight requests.
 
 The correct pattern uses `signal.NotifyContext` (Go 1.16+) or `signal.Notify` with a channel:
 
@@ -60,9 +60,9 @@ func main() {
 ```
 
 Key rules:
-- Use `Shutdown(ctx)` not `Close()` — `Shutdown` waits for in-flight requests; `Close` drops them.
+- Use `Shutdown(ctx)` not `Close()`: `Shutdown` waits for in-flight requests; `Close` drops them.
 - Always give the shutdown a deadline (30s is a good default). Without it, a hung request hangs your pod forever.
-- Kubernetes default `terminationGracePeriodSeconds` is 30s — align your timeout to be slightly less.
+- Kubernetes default `terminationGracePeriodSeconds` is 30s, so align your timeout to be slightly less.
 
 ---
 
@@ -75,7 +75,7 @@ Two endpoints, two different jobs:
 | `/healthz` | Liveness: is the process alive? | Kubernetes restarts the pod |
 | `/readyz` | Readiness: can it serve traffic? | Kubernetes removes pod from load balancer |
 
-**Liveness must be trivial.** If liveness checks the database and the database goes down, Kubernetes restarts every pod — making an outage worse. Liveness should only confirm the process is not deadlocked.
+**Liveness must be trivial.** If liveness checks the database and the database goes down, Kubernetes restarts every pod, making an outage worse. Liveness should only confirm the process is not deadlocked.
 
 ```go
 // Liveness — always 200 as long as the process is running
@@ -128,7 +128,7 @@ readinessProbe:
 
 ## Structured Logging
 
-Use `log/slog` (stdlib, Go 1.21+) for new projects. Never use `fmt.Printf` in production — you can't query or filter it.
+Use `log/slog` (stdlib, Go 1.21+) for new projects. Never use `fmt.Printf` in production: you can't query or filter it.
 
 ```go
 import "log/slog"
@@ -157,9 +157,9 @@ slog.Error("database query failed",
 ```
 
 Always carry context through your logs:
-- `request_id` — correlate all log lines for a single request
-- `trace_id` / `span_id` — if using distributed tracing (OpenTelemetry)
-- `service` / `version` — if running multiple services
+- `request_id`: correlate all log lines for a single request
+- `trace_id` / `span_id`: if using distributed tracing (OpenTelemetry)
+- `service` / `version`: if running multiple services
 
 **When to use zerolog or zap instead:** Only when benchmarks prove `slog` is a bottleneck (rare). Both zerolog and zap have steeper APIs. Prefer `slog` unless you're logging millions of lines per second.
 
@@ -215,7 +215,7 @@ For complex configs, `github.com/kelseyhightower/envconfig` or `github.com/caarl
 
 ## Profiling with pprof
 
-Register the pprof HTTP handlers in your server — but **never expose them publicly**. Gate them behind an internal port or require authentication.
+Register the pprof HTTP handlers in your server, but **never expose them publicly**. Gate them behind an internal port or require authentication.
 
 ```go
 import _ "net/http/pprof" // registers /debug/pprof/* handlers on DefaultServeMux
@@ -258,7 +258,7 @@ func BenchmarkHandler(b *testing.B) {
 
 ## Build and Deploy
 
-Multi-stage Docker build — small, static, no shell:
+Multi-stage Docker build (small, static, no shell):
 
 ```dockerfile
 # Stage 1: build
@@ -299,9 +299,9 @@ go build -ldflags="-X main.version=$(git describe --tags) -X main.commit=$(git r
 ```
 
 Key flags:
-- `CGO_ENABLED=0` — fully static binary, no libc dependency
-- `-s -w` — strip debug symbols and DWARF info (smaller binary)
-- `distroless/static` — no shell, no package manager, minimal attack surface
+- `CGO_ENABLED=0`: fully static binary, no libc dependency
+- `-s -w`: strip debug symbols and DWARF info (smaller binary)
+- `distroless/static`: no shell, no package manager, minimal attack surface
 
 ---
 

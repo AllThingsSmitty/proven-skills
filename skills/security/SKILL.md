@@ -5,7 +5,7 @@ description: Security review for code, APIs, and system designs. Always use this
 
 # Security
 
-Security review is not a checklist to tick — it's a way of thinking about trust. For every piece of code, ask: what can an attacker control here, and what can they make the system do with it?
+Security review is not a checklist to tick: it's a way of thinking about trust. For every piece of code, ask: what can an attacker control here, and what can they make the system do with it?
 
 ## Threat modeling first
 
@@ -18,16 +18,16 @@ Before reviewing specific code, understand the threat surface:
 
 Use STRIDE to check you haven't missed a category:
 
-- **S**poofing — can an attacker impersonate another user or system?
-- **T**ampering — can an attacker modify data in transit or at rest?
-- **R**epudiation — can an attacker perform actions that can't be traced back to them?
-- **I**nformation Disclosure — can an attacker read data they shouldn't?
-- **D**enial of Service — can an attacker degrade or disable the service?
-- **E**levation of Privilege — can an attacker gain permissions they shouldn't have?
+- **S**poofing: can an attacker impersonate another user or system?
+- **T**ampering: can an attacker modify data in transit or at rest?
+- **R**epudiation: can an attacker perform actions that can't be traced back to them?
+- **I**nformation Disclosure: can an attacker read data they shouldn't?
+- **D**enial of Service: can an attacker degrade or disable the service?
+- **E**levation of Privilege: can an attacker gain permissions they shouldn't have?
 
 ## Input validation and injection
 
-**Never trust external input.** Anything that arrives from outside the process — HTTP parameters, headers, bodies, file contents, environment variables read at runtime, database values that were originally user-supplied — is untrusted until validated.
+**Never trust external input.** Anything that arrives from outside the process (HTTP parameters, headers, bodies, file contents, environment variables read at runtime, database values that were originally user-supplied) is untrusted until validated.
 
 **SQL injection**: use parameterized queries (prepared statements) everywhere. Never concatenate user input into SQL strings. This applies to every database library in every language.
 
@@ -41,7 +41,7 @@ query = "SELECT * FROM users WHERE email = ?"  // with email as a bound paramete
 
 **Command injection**: never pass user input to shell commands. If you must invoke a subprocess, use argument arrays (not string interpolation) and validate input strictly before passing it.
 
-**XSS (Cross-Site Scripting)**: escape output at the rendering layer, not at the input layer. Input sanitization loses information and is hard to get right. Output encoding (HTML-encode when rendering in HTML, JS-encode when rendering in JS) is the correct defense. Modern templating frameworks (React, Vue, Angular) do this by default — don't bypass their escaping.
+**XSS (Cross-Site Scripting)**: escape output at the rendering layer, not at the input layer. Input sanitization loses information and is hard to get right. Output encoding (HTML-encode when rendering in HTML, JS-encode when rendering in JS) is the correct defense. Modern templating frameworks (React, Vue, Angular) do this by default; don't bypass their escaping.
 
 **Path traversal**: if constructing a file path from user input, canonicalize the resulting path and verify it's within the expected directory before opening. `../../../etc/passwd` is a path traversal attack.
 
@@ -61,29 +61,29 @@ query = "SELECT * FROM users WHERE email = ?"  // with email as a bound paramete
 
 **JWT**:
 
-- Verify the signature on every request — don't just decode and trust the payload.
+- Verify the signature on every request; don't just decode and trust the payload.
 - Reject the `alg: none` algorithm explicitly.
 - Validate `exp`, `iss`, and `aud` claims.
 - Keep tokens short-lived; use refresh tokens for longer sessions.
-- Don't store sensitive data in the payload — it's base64-encoded, not encrypted.
+- Don't store sensitive data in the payload: it's base64-encoded, not encrypted.
 
 **OAuth / OIDC**:
 
 - Validate the `state` parameter to prevent CSRF against the authorization flow.
-- Validate `redirect_uri` strictly — don't allow open redirects.
+- Validate `redirect_uri` strictly; don't allow open redirects.
 - Validate the ID token's `nonce` to prevent replay attacks.
 
 **Multi-factor authentication**: for any system handling sensitive data or admin functions, MFA should be available and enforced for privileged accounts.
 
 ## Authorization
 
-Authentication answers "who are you?" — authorization answers "what are you allowed to do?" They're separate concerns and must both be checked.
+Authentication answers "who are you?" Authorization answers "what are you allowed to do?" They're separate concerns and must both be checked.
 
 **Check authorization at every operation, not just at login.** A user authenticated as User A should not be able to read User B's data by changing an ID in the URL. Verify ownership or permission on every resource access.
 
 **Principle of least privilege**: grant the minimum permissions needed to do the job. Service accounts, API keys, and database users should not have admin-level access unless they specifically need it.
 
-**IDOR (Insecure Direct Object Reference)**: when an endpoint accepts a resource ID (order ID, user ID, document ID), verify the requesting user has permission to access that specific resource — don't just check that they're authenticated.
+**IDOR (Insecure Direct Object Reference)**: when an endpoint accepts a resource ID (order ID, user ID, document ID), verify the requesting user has permission to access that specific resource; don't just check that they're authenticated.
 
 **Horizontal vs vertical privilege escalation**:
 
@@ -94,13 +94,13 @@ Both must be prevented. Horizontal is easy to overlook because the authorization
 
 ## Secrets management
 
-**Secrets don't belong in code.** API keys, database credentials, tokens, private keys — none of these belong in source files, even in private repos. Use environment variables for local development, and a secrets manager (AWS Secrets Manager, HashiCorp Vault, Azure Key Vault, GCP Secret Manager) in production.
+**Secrets don't belong in code.** API keys, database credentials, tokens, private keys: none of these belong in source files, even in private repos. Use environment variables for local development, and a secrets manager (AWS Secrets Manager, HashiCorp Vault, Azure Key Vault, GCP Secret Manager) in production.
 
 **Audit for secrets in the codebase.** Tools: `trufflehog`, `gitleaks`, `detect-secrets`. Run these in CI and before open-sourcing any repository.
 
 **Rotate credentials regularly.** Leaked credentials from a breach 18 months ago are still valid if they've never been rotated. Automate rotation where possible.
 
-**Don't log secrets.** Audit log statements that include request objects, headers, or full environment dumps — credentials often end up in logs this way.
+**Don't log secrets.** Audit log statements that include request objects, headers, or full environment dumps; credentials often end up in logs this way.
 
 **Short-lived over long-lived.** Prefer short-lived tokens (minutes to hours) with refresh over long-lived static credentials. A leaked short-lived token has a bounded impact window.
 
@@ -137,9 +137,9 @@ For any HTTP service, set these headers:
 
 **Don't roll your own crypto.** Use well-audited libraries (libsodium, Bouncy Castle, Web Crypto API). The primitives matter too: use AES-GCM or ChaCha20-Poly1305 for symmetric encryption; use Ed25519 or RSA-OAEP for asymmetric. Don't use ECB mode, MD5, SHA-1, or DES.
 
-**Keys and nonces**: encryption keys must be random and never reused across contexts. Nonces in authenticated encryption must never repeat for a given key — a single nonce reuse can completely break confidentiality.
+**Keys and nonces**: encryption keys must be random and never reused across contexts. Nonces in authenticated encryption must never repeat for a given key: a single nonce reuse can completely break confidentiality.
 
-**TLS**: use TLS 1.2 or 1.3. Disable older versions (SSL, TLS 1.0, 1.1). Verify certificates — don't disable certificate validation in production code, even "temporarily."
+**TLS**: use TLS 1.2 or 1.3. Disable older versions (SSL, TLS 1.0, 1.1). Verify certificates; don't disable certificate validation in production code, even "temporarily."
 
 ## Error handling and information disclosure
 

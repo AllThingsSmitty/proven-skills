@@ -7,7 +7,7 @@ Go tests should verify behavior, not implementation. Keep tests close to the cod
 
 ## Table-Driven Tests
 
-Table-driven tests are the idiomatic Go pattern for testing a function across multiple inputs. Use a slice of structs with `name`, input, and expected fields. Always use `t.Run` for each case — this gives each case an identity in the output.
+Table-driven tests are the idiomatic Go pattern for testing a function across multiple inputs. Use a slice of structs with `name`, input, and expected fields. Always use `t.Run` for each case: it gives each case an identity in the output.
 
 ```go
 func TestAdd(t *testing.T) {
@@ -66,7 +66,7 @@ func assertNoError(t *testing.T, err error) {
 }
 ```
 
-Use `t.Cleanup` for teardown — it runs even when the test fails:
+Use `t.Cleanup` for teardown (it runs even when the test fails):
 
 ```go
 func TestWithFile(t *testing.T) {
@@ -81,10 +81,10 @@ func TestWithFile(t *testing.T) {
 
 Both packages come from `github.com/stretchr/testify`.
 
-- `assert` — records the failure and continues the test
-- `require` — records the failure and stops the test immediately (calls `t.FailNow`)
+- `assert`: records the failure and continues the test
+- `require`: records the failure and stops the test immediately (calls `t.FailNow`)
 
-**Use `require` for preconditions** — anything where the rest of the test is meaningless if it fails. Use `assert` for independent checks.
+**Use `require` for preconditions**: anything where the rest of the test is meaningless if it fails. Use `assert` for independent checks.
 
 ```go
 import (
@@ -182,7 +182,7 @@ A fake with a map or slice backing store is sufficient for most unit tests. Only
 
 ## Testing HTTP Handlers
 
-Use `httptest.NewRecorder()` and `httptest.NewRequest()` — no real server needed.
+Use `httptest.NewRecorder()` and `httptest.NewRequest()`; no real server needed.
 
 ```go
 func TestCreateUserHandler(t *testing.T) {
@@ -207,7 +207,7 @@ For a full router, pass `httptest.NewServer(router)` and make real HTTP calls ag
 
 ## Benchmarks
 
-Benchmark functions start with `BenchmarkXxx` and accept `*testing.B`. The body runs `b.N` times — the framework adjusts `b.N` until the result is stable.
+Benchmark functions start with `BenchmarkXxx` and accept `*testing.B`. The body runs `b.N` times; the framework adjusts `b.N` until the result is stable.
 
 ```go
 func BenchmarkJSONMarshal(b *testing.B) {
@@ -251,7 +251,7 @@ Canonical CI invocation: `go test -race -count=1 ./...`
 
 **Testing implementation, not behavior.** Tests should break when behavior changes, not when you rename a private variable. Test through the public API.
 
-**Skipping `-race`.** Data races are silent in normal runs. Run `go test -race ./...` in CI — always, no exceptions.
+**Skipping `-race`.** Data races are silent in normal runs. Run `go test -race ./...` in CI, always, no exceptions.
 
 **Mocking concrete types.** Wrapping `*sql.DB` with a mock library couples your tests to the library's internals. Define an interface instead.
 

@@ -5,11 +5,11 @@ description: Node.js async patterns advisor. Always use this skill when working 
 
 # Node.js Async Patterns
 
-Node.js runs on a single thread. Everything async works because the event loop defers I/O — but that model breaks the moment you block the thread or mismanage promises. Most Node.js production issues trace back to one of a handful of async mistakes.
+Node.js runs on a single thread. Everything async works because the event loop defers I/O. But that model breaks the moment you block the thread or mismanage promises. Most Node.js production issues trace back to one of a handful of async mistakes.
 
 ## Never block the event loop
 
-The event loop handles every request. If you block it — with a CPU-intensive loop, a synchronous file read, or heavy JSON parsing — every in-flight request stalls until you're done.
+The event loop handles every request. If you block it (with a CPU-intensive loop, a synchronous file read, or heavy JSON parsing), every in-flight request stalls until you're done.
 
 ```ts
 // Bad: blocks the event loop for every caller
@@ -41,7 +41,7 @@ function runInWorker(data: unknown): Promise<unknown> {
 
 ## Handle every rejected promise
 
-In modern Node.js (v15+), an unhandled promise rejection crashes the process. In older versions it silently swallows the error — often worse.
+In modern Node.js (v15+), an unhandled promise rejection crashes the process. In older versions it silently swallows the error, often worse.
 
 ```ts
 // Bad: rejection is swallowed if sendEmail rejects
@@ -60,7 +60,7 @@ sendEmail(user.email, "Welcome!").catch((err) =>
 );
 ```
 
-Listen for the process-level safety net — but don't rely on it as a substitute for proper handling:
+Listen for the process-level safety net, but don't rely on it as a substitute for proper handling:
 
 ```ts
 process.on("unhandledRejection", (reason) => {
@@ -71,7 +71,7 @@ process.on("unhandledRejection", (reason) => {
 
 ## Concurrent operations: Promise.all and Promise.allSettled
 
-Run independent async operations concurrently — don't await them sequentially when order doesn't matter.
+Run independent async operations concurrently: don't await them sequentially when order doesn't matter.
 
 ```ts
 // Bad: sequential — total time = sum of all durations
@@ -89,8 +89,8 @@ const [user, orders, prefs] = await Promise.all([
 
 **`Promise.all` vs `Promise.allSettled`**:
 
-- `Promise.all` — rejects immediately if any promise rejects. Use when all results are required.
-- `Promise.allSettled` — waits for all, gives you success/failure for each. Use when partial results are acceptable.
+- `Promise.all`: rejects immediately if any promise rejects. Use when all results are required.
+- `Promise.allSettled`: waits for all, gives you success/failure for each. Use when partial results are acceptable.
 
 ```ts
 const results = await Promise.allSettled([fetchA(), fetchB(), fetchC()]);

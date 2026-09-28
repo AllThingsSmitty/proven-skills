@@ -5,11 +5,11 @@ description: Go type system advisor. Always use this skill when designing Go int
 
 # Go Types
 
-Go's type system rewards restraint. The most common mistakes — large interfaces, premature generics, type assertions without comma-ok — all come from over-engineering. Prefer concrete types until abstraction earns its place.
+Go's type system rewards restraint. The most common mistakes (large interfaces, premature generics, type assertions without comma-ok) all come from over-engineering. Prefer concrete types until abstraction earns its place.
 
 ## Interfaces
 
-Interfaces are satisfied implicitly. No `implements` keyword — if a type has the methods, it satisfies the interface. This makes interfaces powerful and dangerous: it's easy to define one that nobody actually satisfies.
+Interfaces are satisfied implicitly. No `implements` keyword; if a type has the methods, it satisfies the interface. This makes interfaces powerful and dangerous: it's easy to define one that nobody actually satisfies.
 
 **Keep interfaces small.** The standard library's best interfaces have one or two methods: `io.Reader`, `io.Writer`, `fmt.Stringer`. One method = one behavior = easy to satisfy, easy to compose.
 
@@ -73,7 +73,7 @@ type Order struct {
 }
 ```
 
-Embedding an interface inside a struct satisfies that interface at compile time and is useful for partial mocking in tests, but it's a footgun in production code — unimplemented methods panic at runtime.
+Embedding an interface inside a struct satisfies that interface at compile time and is useful for partial mocking in tests, but it's a footgun in production code: unimplemented methods panic at runtime.
 
 ## Generics (Go 1.18+)
 
@@ -159,7 +159,7 @@ func describe(i interface{}) string {
 }
 ```
 
-If you find yourself writing many type assertions against an `interface{}` or `any`, that's a design signal — the types probably deserve a real interface or a concrete wrapper.
+If you find yourself writing many type assertions against an `interface{}` or `any`, that's a design signal: the types probably deserve a real interface or a concrete wrapper.
 
 ## Error Types
 
@@ -215,7 +215,7 @@ var oid OrderID = "order-123"
 GetUser(oid) // compile error: cannot use OrderID as UserID
 ```
 
-A **type alias** (`type Celsius = float64`) is an exact synonym — the two names are interchangeable. Use aliases for gradual refactoring or to re-export a type from another package.
+A **type alias** (`type Celsius = float64`) is an exact synonym: the two names are interchangeable. Use aliases for gradual refactoring or to re-export a type from another package.
 
 ```go
 // Alias: allows migrating callers incrementally

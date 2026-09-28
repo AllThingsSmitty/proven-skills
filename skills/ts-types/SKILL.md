@@ -5,7 +5,7 @@ description: TypeScript type system advisor. Always use this skill when designin
 
 # TypeScript Types
 
-Good types are constraints, not descriptions. The goal is to make invalid states unrepresentable — so the compiler catches mistakes before they reach runtime.
+Good types are constraints, not descriptions. The goal is to make invalid states unrepresentable, so the compiler catches mistakes before they reach runtime.
 
 ## Prefer `unknown` over `any`
 
@@ -25,7 +25,7 @@ function parse(raw: unknown) {
 }
 ```
 
-Use `any` only at integration boundaries with untyped third-party code, and isolate it — don't let it propagate.
+Use `any` only at integration boundaries with untyped third-party code, and isolate it; don't let it propagate.
 
 ## Avoid type assertions (`as`)
 
@@ -42,7 +42,7 @@ if (!(el instanceof HTMLDivElement)) throw new Error('Missing #app');
 
 ## Discriminated unions for modeling state
 
-When a value can be in multiple mutually exclusive states, use a discriminated union — a shared literal field that TypeScript uses to narrow.
+When a value can be in multiple mutually exclusive states, use a discriminated union: a shared literal field that TypeScript uses to narrow.
 
 ```ts
 type Result<T> =
@@ -67,9 +67,9 @@ This beats optional fields (`data?: T; error?: string`) because optional fields 
 
 TypeScript narrows types based on control flow. Use the built-in narrowing tools before reaching for type assertions.
 
-- `typeof x === 'string'` — primitive types
-- `x instanceof MyClass` — class instances
-- `'field' in x` — object shapes
+- `typeof x === 'string'`: primitive types
+- `x instanceof MyClass`: class instances
+- `'field' in x`: object shapes
 - Custom type guards: `function isUser(x: unknown): x is User`
 
 ```ts
@@ -78,7 +78,7 @@ function isUser(x: unknown): x is User {
 }
 ```
 
-Exhaustiveness checking — make the compiler tell you when you've missed a case:
+Exhaustiveness checking: make the compiler tell you when you've missed a case:
 
 ```ts
 function assertNever(x: never): never {
@@ -156,7 +156,7 @@ type EventName<T extends string> = `on${Capitalize<T>}`;
 type ClickHandler = EventName<'click'>; // 'onClick'
 ```
 
-Use sparingly — they add complexity and slow compilation when overused.
+Use sparingly; they add complexity and slow compilation when overused.
 
 ## What to watch for in code review
 

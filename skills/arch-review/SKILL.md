@@ -9,13 +9,13 @@ Distributed systems fail in ways that single-process systems don't. The goal of 
 
 ## How to run a review
 
-Work through these areas in order — earlier sections surface problems that change how you think about later ones.
+Work through these areas in order: earlier sections surface problems that change how you think about later ones.
 
 ---
 
 ## 1. Service boundaries and data ownership
 
-**Each service should own its data.** If two services share a database, they're not two services — they're one service split across two codebases. Shared databases create hidden coupling: schema changes in one service break the other; transactions span service boundaries and become distributed transactions (hard) or are abandoned (inconsistent).
+**Each service should own its data.** If two services share a database, they're not two services; they're one service split across two codebases. Shared databases create hidden coupling: schema changes in one service break the other; transactions span service boundaries and become distributed transactions (hard) or are abandoned (inconsistent).
 
 **Ask for each service:**
 
@@ -35,7 +35,7 @@ Work through these areas in order — earlier sections surface problems that cha
 
 ## 2. Communication patterns
 
-**Synchronous (request/response)**: service A calls service B and waits for a response. Simple to reason about but creates temporal coupling — if B is slow or down, A is impacted.
+**Synchronous (request/response)**: service A calls service B and waits for a response. Simple to reason about but creates temporal coupling: if B is slow or down, A is impacted.
 
 Use synchronous calls when:
 
@@ -43,7 +43,7 @@ Use synchronous calls when:
 - The operation must be consistent (the result of B's work affects what A does next)
 - Latency SLAs require a direct response
 
-**Asynchronous (events/messages)**: service A publishes an event; service B consumes it independently. Decouples services temporally — B can be down and A keeps working; B processes when it recovers.
+**Asynchronous (events/messages)**: service A publishes an event; service B consumes it independently. Decouples services temporally: B can be down and A keeps working; B processes when it recovers.
 
 Use asynchronous messaging when:
 
@@ -70,7 +70,7 @@ Use asynchronous messaging when:
 - **Change data capture (CDC)**: stream changes from the database's write-ahead log. No code changes needed in the write path; requires infrastructure (Debezium, etc.).
 - **Saga pattern**: for multi-step workflows, model each step as a transaction with a compensating action. Complex but avoids distributed locks.
 
-**Idempotency**: in an eventually-consistent or retry-heavy system, operations will be executed more than once. Every consumer and handler should be idempotent — executing it twice has the same result as once. Track processed message IDs to deduplicate; use upsert semantics rather than insert-only where possible.
+**Idempotency**: in an eventually-consistent or retry-heavy system, operations will be executed more than once. Every consumer and handler should be idempotent, meaning executing it twice has the same result as once. Track processed message IDs to deduplicate; use upsert semantics rather than insert-only where possible.
 
 ---
 
@@ -90,7 +90,7 @@ For each service and integration point, ask: what happens when this fails?
 
 **At-least-once delivery and duplicate messages**: most message queues guarantee at-least-once delivery (exactly-once is hard and expensive). Consumers must handle duplicate messages. See idempotency above.
 
-**Clock skew**: distributed systems cannot assume clocks are synchronized. Don't rely on timestamps for ordering — use logical clocks (Lamport timestamps, vector clocks) or sequence numbers for ordering guarantees.
+**Clock skew**: distributed systems cannot assume clocks are synchronized. Don't rely on timestamps for ordering; use logical clocks (Lamport timestamps, vector clocks) or sequence numbers for ordering guarantees.
 
 ---
 
@@ -119,7 +119,7 @@ A system you can't observe is a system you can't operate. Three pillars:
 
 **Logs** (what happened):
 
-- Structured (JSON), not free-form — logs are queried, not read
+- Structured (JSON), not free-form: logs are queried, not read
 - Include: request ID (for tracing a single request across services), user or tenant ID, operation name, outcome, duration
 - Sample at high volume; don't log at DEBUG level in production without a sampling rate
 - Don't log sensitive data (tokens, PII, passwords)
@@ -128,7 +128,7 @@ A system you can't observe is a system you can't operate. Three pillars:
 
 - Distributed tracing (OpenTelemetry, Jaeger, Zipkin) connects spans across service boundaries using a shared trace ID propagated in request headers
 - Essential for diagnosing latency in multi-service call chains
-- Without traces, you know a request was slow — you don't know which service was responsible
+- Without traces, you know a request was slow, but you don't know which service was responsible
 
 **Alerting**: alert on symptoms (user-visible impact: high error rate, high latency) not just causes (high CPU, low disk). An alert that fires without user impact creates noise and trains responders to ignore alerts.
 
@@ -142,6 +142,6 @@ A system you can't observe is a system you can't operate. Three pillars:
 
 **Graceful shutdown**: services should stop accepting new requests on SIGTERM, drain in-flight requests, and close connections cleanly. Abrupt shutdown under load causes request failures and connection pool errors in callers.
 
-**Health checks**: every service needs a health endpoint (liveness and readiness separately if your orchestrator distinguishes them). Readiness should fail if the service's dependencies are unavailable — don't let traffic route to an instance that can't serve it.
+**Health checks**: every service needs a health endpoint (liveness and readiness separately if your orchestrator distinguishes them). Readiness should fail if the service's dependencies are unavailable. Don't let traffic route to an instance that can't serve it.
 
 **Runbooks**: for every known failure mode, document what to check and how to mitigate. On-call engineers shouldn't be figuring this out at 3am for the first time.

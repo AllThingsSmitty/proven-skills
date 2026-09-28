@@ -5,7 +5,7 @@ description: Python type system advisor. Always use this skill when working with
 
 # Python Types
 
-Python's type system is gradual — you can add hints incrementally without breaking anything. But partial typing is a trap: unannotated code is treated as `Any` by mypy, and `Any` propagates silently. The goal is enough coverage that mypy can catch real mistakes.
+Python's type system is gradual: you can add hints incrementally without breaking anything. But partial typing is a trap: unannotated code is treated as `Any` by mypy, and `Any` propagates silently. The goal is enough coverage that mypy can catch real mistakes.
 
 ## Start with `--strict` in mypy
 
@@ -21,7 +21,7 @@ Or per-file to adopt gradually:
 # mypy: strict
 ```
 
-Key strict flags: `--disallow-untyped-defs`, `--disallow-any-generics`, `--warn-return-any`. Fix these first — they catch the most real bugs.
+Key strict flags: `--disallow-untyped-defs`, `--disallow-any-generics`, `--warn-return-any`. Fix these first. They catch the most real bugs.
 
 ## `Any` vs `object`
 
@@ -43,7 +43,7 @@ Use `Any` only at true integration boundaries (untyped third-party libs) and iso
 
 ## Nullable types
 
-Always annotate `None` explicitly. A missing annotation and `Optional[X]` are not the same — the latter is checked.
+Always annotate `None` explicitly. A missing annotation and `Optional[X]` are not the same; the latter is checked.
 
 ```python
 # Python 3.10+: use the union shorthand
@@ -86,7 +86,7 @@ class User:
     tags: list[str] = field(default_factory=list)
 ```
 
-Don't use plain `dict[str, Any]` for structured data — it hides the shape and loses all checking.
+Don't use plain `dict[str, Any]` for structured data: it hides the shape and loses all checking.
 
 ## Protocol for structural subtyping
 
@@ -139,7 +139,7 @@ def get_id(item: T) -> str:
     return item.id
 ```
 
-Python 3.12+ supports the new `type` statement and `[T]` syntax for generics — use it for new code targeting 3.12+.
+Python 3.12+ supports the new `type` statement and `[T]` syntax for generics; use it for new code targeting 3.12+.
 
 ## `Literal` and `Final`
 
@@ -182,8 +182,8 @@ def process(user: User) -> None:  # string annotation resolved by mypy
 
 ## What to watch for in code review
 
-- Functions with no return type annotation — mypy skips them entirely
+- Functions with no return type annotation: mypy skips them entirely
 - `dict` or `list` used without type parameters (`dict[str, Any]` vs `dict`)
 - `Optional[X]` return types where `None` is never actually returned (misleads callers)
-- `Any` in return types — errors from the returned value won't be caught downstream
+- `Any` in return types: errors from the returned value won't be caught downstream
 - `# type: ignore` comments without an explanation of why

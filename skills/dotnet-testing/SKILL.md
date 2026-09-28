@@ -5,7 +5,7 @@ description: .NET testing advisor. Always use this skill when writing tests in C
 
 # .NET Testing
 
-xUnit is the modern standard for .NET — it's what ASP.NET Core itself uses internally. Its constructor-based setup (no `[SetUp]` attribute) encourages smaller, more focused test classes. Use it for new projects.
+xUnit is the modern standard for .NET: it's what ASP.NET Core itself uses internally. Its constructor-based setup (no `[SetUp]` attribute) encourages smaller, more focused test classes. Use it for new projects.
 
 ## xUnit basics
 
@@ -78,7 +78,7 @@ mock.Setup(r => r.FindByIdAsync("1", It.IsAny<CancellationToken>()))
 mock.Verify(r => r.FindByIdAsync("1", It.IsAny<CancellationToken>()), Times.Once);
 ```
 
-Mock interfaces, not concrete classes. If a dependency is hard to mock because it's a concrete class, that's a design signal — extract an interface or redesign.
+Mock interfaces, not concrete classes. If a dependency is hard to mock because it's a concrete class, that's a design signal: extract an interface or redesign.
 
 ## FluentAssertions
 
@@ -95,7 +95,7 @@ user.Email.Should().NotBeNullOrEmpty();
 user.Should().BeEquivalentTo(expected, options => options.Excluding(u => u.CreatedAt));
 ```
 
-`BeEquivalentTo` does deep structural comparison — very useful for asserting complex objects without writing field-by-field assertions.
+`BeEquivalentTo` does deep structural comparison; it's very useful for asserting complex objects without writing field-by-field assertions.
 
 ## Integration testing with WebApplicationFactory
 
@@ -130,11 +130,11 @@ public class UsersApiTests : IClassFixture<WebApplicationFactory<Program>>
 }
 ```
 
-`IClassFixture<T>` shares the factory across all tests in the class — the server starts once per class, not per test.
+`IClassFixture<T>` shares the factory across all tests in the class: the server starts once per class, not per test.
 
 ## Async tests
 
-xUnit handles async natively — return `Task` from test methods:
+xUnit handles async natively, so return `Task` from test methods:
 
 ```csharp
 [Fact]
@@ -145,21 +145,21 @@ public async Task SaveUser_PersistsToRepository()
 }
 ```
 
-Don't use `.Result` or `.Wait()` in tests — it defeats async and can deadlock.
+Don't use `.Result` or `.Wait()` in tests; it defeats async and can deadlock.
 
 ## Test isolation
 
 Each test should be independent. Shared state causes flaky tests.
 
 - Use constructor setup (xUnit) or `[SetUp]` (NUnit) to create fresh instances per test
-- Don't use `static` fields for mocks — they persist across tests
+- Don't use `static` fields for mocks; they persist across tests
 - For database tests, wrap each test in a transaction and roll back: `IDbContextTransaction` with `RollbackAsync()`
 
 ## What to watch for in code review
 
 - Tests sharing mock instances across test methods via `static` fields
-- `.Result` or `.Wait()` in async tests — blocks the thread and can deadlock
+- `.Result` or `.Wait()` in async tests: blocks the thread and can deadlock
 - Assertions on multiple unrelated concerns in a single test (hard to diagnose on failure)
 - `[Theory]` without enough cases to actually cover the interesting boundaries
-- WebApplicationFactory tests that hit a real external database — use a test double or in-memory DB
+- WebApplicationFactory tests that hit a real external database: use a test double or in-memory DB
 - Mocking concrete classes instead of interfaces

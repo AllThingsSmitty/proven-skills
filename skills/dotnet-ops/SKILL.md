@@ -5,11 +5,11 @@ description: Production .NET operations advisor. Always use this skill when depl
 
 # Production .NET Operations
 
-ASP.NET Core is production-ready out of the box — but several defaults need explicit configuration before a service is truly operational: graceful shutdown, meaningful health checks, structured logging, and validated configuration. These aren't nice-to-haves; they're the difference between a service that degrades gracefully and one that drops requests during deploys.
+ASP.NET Core is production-ready out of the box, but several defaults need explicit configuration before a service is truly operational: graceful shutdown, meaningful health checks, structured logging, and validated configuration. These aren't nice-to-haves; they're the difference between a service that degrades gracefully and one that drops requests during deploys.
 
 ## Graceful shutdown
 
-.NET's generic host handles `SIGTERM` and `SIGINT` automatically — it triggers `IHostApplicationLifetime.ApplicationStopping` and waits for hosted services to stop. Configure the timeout:
+.NET's generic host handles `SIGTERM` and `SIGINT` automatically: it triggers `IHostApplicationLifetime.ApplicationStopping` and waits for hosted services to stop. Configure the timeout:
 
 ```csharp
 // Program.cs
@@ -46,7 +46,7 @@ public class MyConsumer : BackgroundService
 }
 ```
 
-`BackgroundService` handles the hosted service lifecycle — override `ExecuteAsync` and respect the `stoppingToken`.
+`BackgroundService` handles the hosted service lifecycle. Override `ExecuteAsync` and respect the `stoppingToken`.
 
 ## Health checks
 
@@ -77,7 +77,7 @@ The readiness check should fail during startup (before the app is configured) an
 
 ## Configuration with IOptions
 
-Don't read `IConfiguration` directly in services — bind it to typed options classes and inject those instead. This validates at startup, is testable, and is refactor-safe.
+Don't read `IConfiguration` directly in services; bind it to typed options classes and inject those instead. This validates at startup, is testable, and is refactor-safe.
 
 ```csharp
 // Options class
@@ -109,7 +109,7 @@ Environment variable overrides: .NET configuration providers stack in order. The
 
 ## Structured logging
 
-Use `ILogger<T>` — it's built in and integrates with any sink. Add Serilog for production-quality structured output:
+Use `ILogger<T>`; it's built in and integrates with any sink. Add Serilog for production-quality structured output:
 
 ```csharp
 // Program.cs
@@ -131,7 +131,7 @@ public partial class UserService(ILogger<UserService> logger)
 }
 ```
 
-Source-generated logging (`[LoggerMessage]`) avoids boxing and string allocation on the hot path — use it in high-throughput services.
+Source-generated logging (`[LoggerMessage]`) avoids boxing and string allocation on the hot path; use it in high-throughput services.
 
 Log levels: `Error` for actionable failures, `Warning` for degraded but functional, `Information` for significant lifecycle events, `Debug` for local dev only. Never `Debug` in production by default.
 
@@ -155,7 +155,7 @@ public class CleanupJob : BackgroundService
 builder.Services.AddHostedService<CleanupJob>();
 ```
 
-If `ExecuteAsync` throws, the host logs the exception but continues running — the background service stops silently. Handle exceptions inside `ExecuteAsync` or use `IHostApplicationLifetime.StopApplication()` to fail the whole process if the job is critical.
+If `ExecuteAsync` throws, the host logs the exception but continues running: the background service stops silently. Handle exceptions inside `ExecuteAsync` or use `IHostApplicationLifetime.StopApplication()` to fail the whole process if the job is critical.
 
 ## Kestrel in production
 
@@ -170,14 +170,14 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 ```
 
-Always set `ASPNETCORE_ENVIRONMENT` to `Production` in production — it disables developer exception pages and switches behavior in several middleware components.
+Always set `ASPNETCORE_ENVIRONMENT` to `Production` in production: it disables developer exception pages and switches behavior in several middleware components.
 
 ## What to watch for in code review
 
-- `ShutdownTimeout` not configured — process killed mid-request during deploys
+- `ShutdownTimeout` not configured: process killed mid-request during deploys
 - A single `/health` endpoint serving both liveness and readiness purposes
 - `IConfiguration["Key"]` read directly in services instead of `IOptions<T>`
-- `ValidateOnStart()` missing — config errors surface at runtime, not startup
-- `BackgroundService.ExecuteAsync` without exception handling — job fails silently
+- `ValidateOnStart()` missing: config errors surface at runtime, not startup
+- `BackgroundService.ExecuteAsync` without exception handling: job fails silently
 - `Console.WriteLine` or `Debug.WriteLine` instead of `ILogger`
-- `ASPNETCORE_ENVIRONMENT` not set — app runs in Development mode in production
+- `ASPNETCORE_ENVIRONMENT` not set: app runs in Development mode in production
