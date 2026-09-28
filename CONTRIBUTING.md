@@ -42,7 +42,7 @@ Good candidates:
 - Better guidance in a section that's vague or incomplete
 - New sections covering gaps in the current content
 - More concrete examples
-- Cleaner trigger descriptions (see below — these matter a lot)
+- Cleaner trigger descriptions (see below; these matter a lot)
 
 ### New evals
 
@@ -59,7 +59,7 @@ Each skill lives at `skills/{name}/SKILL.md`. The frontmatter has two required f
 ```markdown
 ---
 name: skill-name
-description: Trigger description — see guidance below.
+description: Trigger description (see guidance below).
 ---
 ```
 
@@ -69,7 +69,7 @@ This is the most important field. Claude Code uses it to decide when to activate
 
 A good description:
 - States the domain clearly and early
-- Uses assertive language — "Always use this skill when..." and "Read this skill before..." rather than "Use this skill when..."
+- Uses assertive language, like "Always use this skill when..." and "Read this skill before...", rather than "Use this skill when..."
 - Lists specific phrasings a user might say that should trigger it, including common synonyms and adjacent terms
 - Closes with a directive ("Read this skill before answering any X question") to reinforce the trigger
 - Is specific enough to avoid false positives on unrelated prompts
@@ -77,15 +77,15 @@ A good description:
 Claude tends to answer questions it's confident about directly, without consulting a skill. Assertive trigger language counteracts this tendency. Skills that cover highly specialized or procedural domains (specific framework internals, on-call workflows, migration safety) auto-trigger more reliably than broad general skills. For general-purpose skills, explicit invocation (`/skill-name`) is always reliable.
 
 ```markdown
-# Too vague — fires on almost anything
+# Too vague: fires on almost anything
 description: Help with code quality and best practices.
 
-# Too passive — Claude answers directly and skips the skill
+# Too passive: Claude answers directly and skips the skill
 description: TypeScript type system advisor. Use this skill when designing types,
   working with generics, narrowing union types, or when the user says "how do I
   type this", "why is TypeScript complaining", "should I use any here".
 
-# Good — assertive, specific, closes with a directive
+# Good: assertive, specific, closes with a directive
 description: TypeScript type system advisor. Always use this skill when designing
   TypeScript types, working with generics, narrowing union types, building
   discriminated unions, or avoiding any. Use when the user says "how do I type
@@ -96,12 +96,12 @@ description: TypeScript type system advisor. Always use this skill when designin
 
 ### Skill content
 
-Skills should be opinionated, not encyclopedic. The goal is to ground Claude in a specific, defensible approach — not to cover every possible option.
+Skills should be opinionated, not encyclopedic. The goal is to ground Claude in a specific, defensible approach, not to cover every possible option.
 
 - Lead with the core principle, not background
 - Use concrete examples (code snippets, not just prose)
 - Include a "what to watch for in code review" section where applicable
-- Keep sections focused — if a section is getting long, it's probably a separate skill
+- Keep sections focused. If a section is getting long, it's probably a separate skill
 
 ## Eval Structure
 
@@ -166,20 +166,20 @@ criteria: |
 ---
 ```
 
-Each eval should have two graders — one for the primary behavior, one for a supporting behavior or negative criterion. Keep graders focused: one thing per grader, stated as a verifiable claim about the response.
+Each eval should have two graders: one for the primary behavior, one for a supporting behavior or negative criterion. Keep graders focused, one thing per grader, stated as a verifiable claim about the response.
 
 ## Pull Request Guidelines
 
 - Search open and closed PRs before submitting to avoid duplicates.
-- Keep changes focused — one skill or fix per PR.
+- Keep changes focused: one skill or fix per PR.
 - New skills must include at least two evals with two graders each.
-- The trigger `description` in the frontmatter should be reviewed carefully — it's the hardest part to get right and has the most impact.
+- The trigger `description` in the frontmatter should be reviewed carefully. It's the hardest part to get right and has the most impact.
 - PR title should be clear: "Add `py-types` skill" or "Improve `debug` eval coverage for async errors".
-- Check spelling and grammar — skill content is read by other developers.
+- Check spelling and grammar. Skill content is read by other developers.
 
 Before merging any skill change, a maintainer will run the **Eval (PR)** workflow from the Actions tab. This runs model-graded evals against the changed skills and fails if any score below 1.0. It requires `ANTHROPIC_API_KEY` to be set as a repo secret. You don't need to run it yourself, but your PR must include passing evals for the workflow to succeed.
 
-Separately, the **Eval (weekly)** workflow runs the full suite every Monday with `--ablation with-without`, comparing every skill against a no-plugin baseline. It doesn't gate anything — it publishes the with/without scores to [`evals/results/published/latest.md`](evals/results/published/latest.md) as a report on what each skill actually contributes.
+Separately, the **Eval (weekly)** workflow runs the full suite every Monday with `--ablation with-without`, comparing every skill against a no-plugin baseline. It doesn't gate anything; it publishes the with/without scores to [`evals/results/published/latest.md`](evals/results/published/latest.md) as a report on what each skill actually contributes.
 
 If a maintainer asks for changes, update your branch and push new commits to the same PR.
 

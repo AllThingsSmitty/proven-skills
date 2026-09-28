@@ -12,7 +12,7 @@ description: >
 
 ## Goroutines
 
-Goroutines are cheap (a few KB of stack) but not free. Every goroutine must have a clear exit condition — otherwise it leaks. A goroutine leak happens when a goroutine blocks forever on a channel send, channel receive, or lock with no one to unblock it.
+Goroutines are cheap (a few KB of stack) but not free. Every goroutine must have a clear exit condition; otherwise it leaks. A goroutine leak happens when a goroutine blocks forever on a channel send, channel receive, or lock with no one to unblock it.
 
 ```go
 // Bad: no exit condition — leaks if done is never closed
@@ -40,7 +40,7 @@ go func() {
 
 ## Channels
 
-Unbuffered channels provide a synchronous rendezvous — sender and receiver must both be ready. Buffered channels decouple them up to the buffer size.
+Unbuffered channels provide a synchronous rendezvous: sender and receiver must both be ready. Buffered channels decouple them up to the buffer size.
 
 ```go
 unbuffered := make(chan int)      // blocks until receiver is ready
@@ -150,7 +150,7 @@ for _, item := range items {
 
 ## sync Package
 
-**Mutex / RWMutex** — prefer `RWMutex` for read-heavy workloads; multiple readers can hold the read lock simultaneously.
+**Mutex / RWMutex**: prefer `RWMutex` for read-heavy workloads; multiple readers can hold the read lock simultaneously.
 
 ```go
 type SafeMap struct {
@@ -171,9 +171,9 @@ func (s *SafeMap) Set(key string, val int) {
 }
 ```
 
-Never copy a mutex — always use pointer receivers and pass structs by pointer.
+Never copy a mutex; always use pointer receivers and pass structs by pointer.
 
-**WaitGroup** — wait for a group of goroutines to finish:
+**WaitGroup**: wait for a group of goroutines to finish:
 
 ```go
 var wg sync.WaitGroup
@@ -187,7 +187,7 @@ for _, item := range items {
 wg.Wait()
 ```
 
-**Once** — run initialization exactly once regardless of how many goroutines call it:
+**Once**: run initialization exactly once regardless of how many goroutines call it:
 
 ```go
 var once sync.Once
@@ -227,7 +227,7 @@ func workerPool(ctx context.Context, jobs <-chan Job, numWorkers int) <-chan Res
 }
 ```
 
-**Semaphore with buffered channel** — limit concurrency without a full worker pool:
+**Semaphore with buffered channel**: limit concurrency without a full worker pool:
 
 ```go
 sem := make(chan struct{}, maxConcurrent)
@@ -246,13 +246,13 @@ for i := 0; i < maxConcurrent; i++ {
 
 ## Common Pitfalls
 
-**Goroutine leak — no exit condition:**
+**Goroutine leak, no exit condition:**
 A goroutine blocked on a channel with no sender/receiver runs forever. Fix: use context cancellation.
 
-**Channel deadlock — send with no receiver:**
+**Channel deadlock, send with no receiver:**
 All goroutines blocked on channel ops causes `fatal error: all goroutines are asleep`. Fix: ensure every send has a matching receive path (or use buffered channels + workers).
 
-**Data race — unsynchronized shared state:**
+**Data race, unsynchronized shared state:**
 Two goroutines reading and writing the same variable without a lock is undefined behavior. Run `go test -race` and `go run -race` always. Fix: use a mutex or communicate via channels.
 
 **Capturing loop variable in goroutine closure:**
@@ -278,4 +278,4 @@ for _, v := range items {
 - `wg.Add(n)` is called before launching goroutines, not inside them
 - Loop variables captured in goroutine closures are passed as arguments
 - `go test -race` passes
-- No `context.Background()` used inside request-scoped code — propagate the incoming context
+- No `context.Background()` used inside request-scoped code: propagate the incoming context

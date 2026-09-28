@@ -1,7 +1,7 @@
 ---
 type: llm
 criteria: |
-  The agent should explain that when one call fails — whether because of an application error, a network error, or because the 2-second timeout fires — the context deadline is still in effect for subsequent calls. If the context has timed out or been cancelled, subsequent calls that accept the context will return immediately with ctx.Err(), which will be context.DeadlineExceeded or context.Canceled rather than a service-specific error.
+  The agent should explain that when one call fails, whether because of an application error, a network error, or because the 2-second timeout fires, the context deadline is still in effect for subsequent calls. If the context has timed out or been cancelled, subsequent calls that accept the context will return immediately with ctx.Err(), which will be context.DeadlineExceeded or context.Canceled rather than a service-specific error.
 
   The agent should advise checking the error from each service call and returning early on failure rather than continuing to invoke the remaining services. Explicit early returns make intent clear and prevent unnecessary work:
 

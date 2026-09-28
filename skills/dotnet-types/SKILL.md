@@ -5,11 +5,11 @@ description: C# and .NET type system advisor. Always use this skill when working
 
 # C# Types
 
-C#'s type system has grown significantly — nullable reference types, records, and pattern matching change how you model data and handle null. Use them. Code written without these features tends to be both more verbose and less safe.
+C#'s type system has grown significantly: nullable reference types, records, and pattern matching change how you model data and handle null. Use them. Code written without these features tends to be both more verbose and less safe.
 
 ## Enable nullable reference types
 
-Enable `<Nullable>enable</Nullable>` in your project file. This makes all reference types non-nullable by default — you must opt into nullability with `?`.
+Enable `<Nullable>enable</Nullable>` in your project file. This makes all reference types non-nullable by default: you must opt into nullability with `?`.
 
 ```xml
 <!-- .csproj -->
@@ -30,7 +30,7 @@ if (email is not null)
 }
 ```
 
-Don't suppress the warnings with `!` (null-forgiving operator) unless you genuinely know more than the compiler — it's the C# equivalent of `as any`.
+Don't suppress the warnings with `!` (null-forgiving operator) unless you genuinely know more than the compiler; it's the C# equivalent of `as any`.
 
 ```csharp
 // Bad: suppresses the warning without checking
@@ -56,7 +56,7 @@ var updated = user with { Email = "new@example.com" };
 
 **Record vs class**: use a record when the identity of the object is defined by its data (two users with the same fields are equal), not its reference. Use a class when identity is reference-based or the type has mutable state.
 
-**Record struct** (C# 10+): value type semantics with record convenience — good for small value objects in performance-sensitive code:
+**Record struct** (C# 10+): value type semantics with record convenience (good for small value objects in performance-sensitive code):
 
 ```csharp
 public readonly record struct Money(decimal Amount, string Currency);
@@ -137,7 +137,7 @@ Common constraints:
 
 ## Value types vs reference types
 
-`struct` is a value type — copied on assignment, no heap allocation, no inheritance. Use for small, immutable data with value semantics (coordinates, money, identifiers).
+`struct` is a value type: copied on assignment, no heap allocation, no inheritance. Use for small, immutable data with value semantics (coordinates, money, identifiers).
 
 ```csharp
 // Good as a struct: small, immutable, value equality makes sense
@@ -147,7 +147,7 @@ public readonly struct Temperature(double Celsius)
 }
 ```
 
-Avoid mutable structs — they produce surprising copy semantics. Mark structs `readonly` to enforce immutability.
+Avoid mutable structs; they produce surprising copy semantics. Mark structs `readonly` to enforce immutability.
 
 ## `var` usage
 
@@ -167,5 +167,5 @@ var x = Calculate();   // what type is x? use explicit type here
 - `!` (null-forgiving) without a comment explaining why the value can't be null
 - Classes with value semantics that should be records
 - `object` parameters or return types that could be generic
-- Mutable structs — they produce confusing copy behavior
+- Mutable structs: they produce confusing copy behavior
 - Long if/else chains over type checks that pattern matching would simplify

@@ -5,11 +5,11 @@ description: Review or design REST and GraphQL APIs for correctness, consistency
 
 # API Design
 
-An API is a contract with callers you may never meet. Design it to be honest, consistent, and survivable: easy to use correctly, hard to use wrong, and possible to evolve without breaking existing clients.
+An API is a contract with callers you may never meet. Design it to be honest and consistent: easy to use correctly, hard to use wrong. It also has to survive change, meaning you can evolve it without breaking existing clients.
 
 ## Resource modeling
 
-Design around resources (nouns), not actions (verbs). A resource is a thing the API manages — not a procedure.
+Design around resources (nouns), not actions (verbs). A resource is a thing the API manages, not a procedure.
 
 Good: `POST /orders`, `GET /orders/{id}`, `PATCH /orders/{id}/status`
 Avoid: `POST /createOrder`, `POST /getOrderById`, `POST /cancelOrder`
@@ -32,7 +32,7 @@ When it's genuinely an action with no natural resource (e.g., triggering a batch
 | DELETE | Remove                           | Yes                            | No    |
 
 - **GET must never have side effects.** Caches, proxies, and clients will retry GETs freely.
-- **PUT vs PATCH**: use PUT when the client sends the whole resource; PATCH when sending only changed fields. Don't use PATCH if you can't handle partial updates cleanly — a PUT is more honest.
+- **PUT vs PATCH**: use PUT when the client sends the whole resource; PATCH when sending only changed fields. Don't use PATCH if you can't handle partial updates cleanly; a PUT is more honest.
 - **POST for non-idempotent actions** is fine, but make it obvious. Document it; consider making it idempotent via a client-supplied idempotency key.
 
 ## Status codes
@@ -41,17 +41,17 @@ Use the right code. Vague codes (`200 OK` for everything, `500` for validation e
 
 Common codes and when to use them:
 
-- `200 OK` — success with a body
-- `201 Created` — resource created; include `Location` header pointing to the new resource
-- `204 No Content` — success, no body (e.g., DELETE, some PATCHes)
-- `400 Bad Request` — client error: invalid syntax, missing required field, constraint violation
-- `401 Unauthorized` — not authenticated (confusingly named; means "prove who you are")
-- `403 Forbidden` — authenticated but not authorized for this action
-- `404 Not Found` — resource doesn't exist _or_ the caller doesn't have permission to know it exists (see: 403 vs 404 for security-sensitive resources)
-- `409 Conflict` — state conflict (e.g., optimistic lock failure, duplicate key)
-- `422 Unprocessable Entity` — syntactically valid but semantically wrong (good for business rule violations)
-- `429 Too Many Requests` — rate limited; include `Retry-After`
-- `500 Internal Server Error` — something unexpected went wrong; don't leak stack traces
+- `200 OK`: success with a body
+- `201 Created`: resource created; include `Location` header pointing to the new resource
+- `204 No Content`: success, no body (e.g., DELETE, some PATCHes)
+- `400 Bad Request`: client error, such as invalid syntax, a missing required field, or a constraint violation
+- `401 Unauthorized`: not authenticated (confusingly named; means "prove who you are")
+- `403 Forbidden`: authenticated but not authorized for this action
+- `404 Not Found`: resource doesn't exist _or_ the caller doesn't have permission to know it exists (see: 403 vs 404 for security-sensitive resources)
+- `409 Conflict`: state conflict (e.g., optimistic lock failure, duplicate key)
+- `422 Unprocessable Entity`: syntactically valid but semantically wrong (good for business rule violations)
+- `429 Too Many Requests`: rate limited; include `Retry-After`
+- `500 Internal Server Error`: something unexpected went wrong; don't leak stack traces
 
 ## Error shapes
 
@@ -72,9 +72,9 @@ A solid error shape:
 
 Rules:
 
-- `code` must be a stable, documented string — never change it once published
+- `code` must be a stable, documented string; never change it once published
 - Don't use HTTP status codes as the only signal; wrap them with semantic codes
-- For validation failures, enumerate all errors in one response — don't make the client fix one field at a time
+- For validation failures, enumerate all errors in one response. Don't make the client fix one field at a time
 - Never include stack traces, internal paths, or database errors in production responses
 
 ## Versioning
@@ -83,9 +83,9 @@ Rules:
 
 **Header versioning** (`Accept: application/vnd.api+json;version=2`) is cleaner theoretically but harder to test and debug.
 
-**No versioning** works only if you commit to never breaking clients — which means additive-only changes forever. Viable for internal APIs with a small, known set of consumers.
+**No versioning** works only if you commit to never breaking clients, which means additive-only changes forever. Viable for internal APIs with a small, known set of consumers.
 
-Whatever you choose, establish the strategy before shipping v1 — retrofitting versioning is painful.
+Whatever you choose, establish the strategy before shipping v1. Retrofitting versioning is painful.
 
 ## Breaking vs non-breaking changes
 
@@ -112,7 +112,7 @@ For any collection that can grow, paginate from day one. Retrofitting it is a br
 
 **Cursor-based** (preferred for most cases): opaque cursor in the response, client passes it back. Stable under concurrent inserts/deletes. Doesn't allow random access but almost nothing needs it.
 
-**Offset-based** (`?page=2&limit=20`): simple, allows random access, but unstable — a concurrent insert shifts every page. Acceptable for small, stable datasets.
+**Offset-based** (`?page=2&limit=20`): simple, allows random access, but unstable: a concurrent insert shifts every page. Acceptable for small, stable datasets.
 
 Response shape:
 
@@ -128,9 +128,9 @@ Response shape:
 
 ## Auth conventions
 
-- Authenticate with `Authorization: Bearer <token>` for API tokens and JWTs — not cookies (unless you're a browser-first API)
+- Authenticate with `Authorization: Bearer <token>` for API tokens and JWTs, not cookies (unless you're a browser-first API)
 - Distinguish 401 (not authenticated) from 403 (authenticated but not allowed)
-- Don't put credentials in query strings — they end up in server logs and browser history
+- Don't put credentials in query strings; they end up in server logs and browser history
 - For machine-to-machine, prefer short-lived tokens with refresh over long-lived static secrets
 
 ## GraphQL-specific
@@ -139,7 +139,7 @@ Response shape:
 
 **Limit query depth and complexity.** Unbounded nested queries are a DoS vector. Set a max depth (typically 7-10 levels) and a complexity budget.
 
-**Pagination in GraphQL**: use the Relay cursor connection spec — it's what clients expect and tools understand.
+**Pagination in GraphQL**: use the Relay cursor connection spec, since it's what clients expect and tools understand.
 
 **Mutations should return the mutated resource**, not just a success flag. Clients need to update their cache.
 

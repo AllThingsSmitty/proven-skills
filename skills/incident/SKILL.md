@@ -1,6 +1,6 @@
 ---
 name: incident
-description: Guide incident response for production outages, degradations, and failures. Always use this skill when a production system is down or degraded, an alert fired, users are impacted, or when the user says "we have an incident", "production is down", "the site is down", "errors are spiking", "PagerDuty fired", "help me triage this", "what's the blast radius", or when walking through a post-mortem. Also use when designing runbooks or on-call procedures. Use immediately — do not attempt to triage without reading this skill first.
+description: Guide incident response for production outages, degradations, and failures. Always use this skill when a production system is down or degraded, an alert fired, users are impacted, or when the user says "we have an incident", "production is down", "the site is down", "errors are spiking", "PagerDuty fired", "help me triage this", "what's the blast radius", or when walking through a post-mortem. Also use when designing runbooks or on-call procedures. Use immediately. Do not attempt to triage without reading this skill first.
 ---
 
 # Incident
@@ -30,11 +30,11 @@ Establish the facts before taking action:
 - Look at your error rate and latency graphs and find the inflection point
 - What changed around that time? Deploys, config changes, traffic patterns, cron jobs, dependency updates?
 
-**Set an initial severity.** Be explicit — it determines communication expectations and who needs to be involved:
+**Set an initial severity.** Be explicit; it determines communication expectations and who needs to be involved:
 
-- **SEV1**: customer-facing, widespread impact, revenue or data at risk — all hands
-- **SEV2**: significant degradation, partial impact — engineering and product engaged
-- **SEV3**: minor degradation, workaround exists — engineering only
+- **SEV1**: customer-facing, widespread impact, revenue or data at risk; all hands
+- **SEV2**: significant degradation, partial impact; engineering and product engaged
+- **SEV3**: minor degradation, workaround exists; engineering only
 
 ## Phase 2: Communicate early
 
@@ -61,7 +61,7 @@ Assign roles explicitly if multiple people are engaged:
 
 Your first goal is to stop the bleeding, not to understand why it's bleeding.
 
-**Rollback the most recent change.** If something deployed in the last 2 hours, roll it back — don't investigate whether it caused the problem, just roll back. If the incident resolves, you have your answer. If it doesn't, you've ruled out the most likely cause and can continue investigating with a clean baseline.
+**Rollback the most recent change.** If something deployed in the last 2 hours, roll it back; don't investigate whether it caused the problem, just roll back. If the incident resolves, you have your answer. If it doesn't, you've ruled out the most likely cause and can continue investigating with a clean baseline.
 
 **Feature flags**: if the affected feature can be disabled, disable it. A degraded-but-functional service is better than a broken one.
 
@@ -78,7 +78,7 @@ Once you've mitigated (or if you've ruled out quick mitigations), investigate:
 **Observe the signals:**
 
 - Error rates by endpoint, service, and dependency
-- Latency percentiles (p50, p95, p99) — a p99 spike with p50 stable often points to a subset of requests or a resource contention issue
+- Latency percentiles (p50, p95, p99): a p99 spike with p50 stable often points to a subset of requests or a resource contention issue
 - Saturation metrics: CPU, memory, connection pool usage, queue depth
 - Dependency health: are upstream services healthy? Are downstream consumers backed up?
 
@@ -97,7 +97,7 @@ Once you've mitigated (or if you've ruled out quick mitigations), investigate:
 Once you believe you have a fix:
 
 1. Apply it to a subset of traffic first if possible
-2. Watch error rates and latency return to baseline — not just "no new errors," but back to normal
+2. Watch error rates and latency return to baseline: not just "no new errors," but back to normal
 3. Confirm with real user reports if available
 4. Declare the incident resolved only when metrics confirm recovery, not when the fix is applied
 
@@ -117,7 +117,7 @@ Write one for every SEV1 and SEV2. The goal is learning, not blame.
 
 **Timeline**: reconstruct the sequence of events with timestamps. When did the incident start? When was it detected? When were key actions taken? How long until mitigation? Until resolution?
 
-**Root cause**: what specific condition caused the failure? Don't stop at the proximate cause ("the server ran out of memory") — find the contributing factors ("the server ran out of memory because a new feature loaded entire dataset into memory, which was safe on small datasets but not at production scale, and there was no load test that caught it").
+**Root cause**: what specific condition caused the failure? Don't stop at the proximate cause ("the server ran out of memory"); find the contributing factors ("the server ran out of memory because a new feature loaded entire dataset into memory, which was safe on small datasets but not at production scale, and there was no load test that caught it").
 
 **Five whys**: keep asking "why" until you reach an organizational or process factor, not just a technical one.
 

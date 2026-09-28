@@ -5,7 +5,7 @@ description: C# async/await patterns advisor. Always use this skill when working
 
 # C# Async Patterns
 
-C#'s async/await model is powerful but has a handful of well-known pitfalls — most production async bugs fall into three categories: deadlocks from blocking on async code, unobserved exceptions from `async void`, and missing cancellation support. Know these cold.
+C#'s async/await model is powerful but has a handful of well-known pitfalls. Most production async bugs fall into three categories: deadlocks from blocking on async code, unobserved exceptions from `async void`, and missing cancellation support. Know these cold.
 
 ## Never block on async code
 
@@ -20,9 +20,9 @@ var data = FetchDataAsync().GetAwaiter().GetResult();
 var user = await GetUserAsync(id);
 ```
 
-In ASP.NET Core there is no synchronization context, so `.GetAwaiter().GetResult()` won't deadlock there — but it still blocks a thread pool thread, defeating the purpose of async. Make it async all the way.
+In ASP.NET Core there is no synchronization context, so `.GetAwaiter().GetResult()` won't deadlock there, but it still blocks a thread pool thread, defeating the purpose of async. Make it async all the way.
 
-If you genuinely need to call async from sync (e.g., a console app entry point or legacy code), use `Task.Run(() => method()).GetAwaiter().GetResult()` as a last resort — but don't normalize it.
+If you genuinely need to call async from sync (e.g., a console app entry point or legacy code), use `Task.Run(() => method()).GetAwaiter().GetResult()` as a last resort, but don't normalize it.
 
 ## `async void` is dangerous
 
@@ -66,13 +66,13 @@ public async Task<string> FetchAsync(string url)
 }
 ```
 
-In **application code** (ASP.NET Core controllers, Blazor, etc.), `ConfigureAwait(false)` is not required — ASP.NET Core has no sync context. Omitting it is fine and reduces noise.
+In **application code** (ASP.NET Core controllers, Blazor, etc.), `ConfigureAwait(false)` is not required: ASP.NET Core has no sync context. Omitting it is fine and reduces noise.
 
 Rule of thumb: library authors need it; application developers usually don't.
 
-## CancellationToken — thread it through everything
+## CancellationToken: thread it through everything
 
-Accept a `CancellationToken` in every async method and pass it to every downstream async call. This enables proper cooperative cancellation — the request is cancelled, the database query stops, the HTTP call aborts.
+Accept a `CancellationToken` in every async method and pass it to every downstream async call. This enables proper cooperative cancellation: the request is cancelled, the database query stops, the HTTP call aborts.
 
 ```csharp
 // Bad: no cancellation support — keeps running after the client disconnects
@@ -88,7 +88,7 @@ public async Task<User> GetUserAsync(string id, CancellationToken ct = default)
 }
 ```
 
-In ASP.NET Core, inject `CancellationToken` as an action parameter — the framework provides a token that cancels when the client disconnects:
+In ASP.NET Core, inject `CancellationToken` as an action parameter; the framework provides a token that cancels when the client disconnects:
 
 ```csharp
 [HttpGet("{id}")]
@@ -117,7 +117,7 @@ public ValueTask<string> GetCachedAsync(string key)
 
 - Can only be awaited once
 - Don't store it in a field and await it multiple times
-- Don't use it unless profiling shows Task allocation is a bottleneck — `Task` is almost always fine
+- Don't use it unless profiling shows Task allocation is a bottleneck; `Task` is almost always fine
 
 ## Concurrent operations
 
@@ -166,8 +166,8 @@ var repo = await Repository.CreateAsync(connStr, ct);
 
 ## What to watch for in code review
 
-- `.Result` or `.Wait()` — deadlock risk and thread waste
-- `async void` outside of event handlers — unobservable exceptions
+- `.Result` or `.Wait()`: deadlock risk and thread waste
+- `async void` outside of event handlers: unobservable exceptions
 - Async methods that don't accept `CancellationToken`
 - `await` inside a loop where `Task.WhenAll` would work
 - Missing `ConfigureAwait(false)` in library projects

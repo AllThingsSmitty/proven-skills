@@ -14,4 +14,4 @@ func main() {
 }
 ```
 
-We recently deployed it to Kubernetes and we're seeing errors during rolling deploys — in-flight requests are getting dropped when pods are replaced. How do I fix this?
+We recently deployed it to Kubernetes and we're seeing errors during rolling deploys: in-flight requests are getting dropped when pods are replaced. How do I fix this?

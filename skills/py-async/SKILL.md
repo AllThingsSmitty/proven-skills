@@ -48,7 +48,7 @@ async def process():
 
 ## Always `await` coroutines
 
-Calling a coroutine without `await` creates a coroutine object but never runs it. Python will warn about it, but it won't raise an exception — the code silently does nothing.
+Calling a coroutine without `await` creates a coroutine object but never runs it. Python will warn about it, but it won't raise an exception: the code silently does nothing.
 
 ```python
 # Bad: coroutine created but never awaited — save_user never runs
@@ -66,7 +66,7 @@ If you see `RuntimeWarning: coroutine 'X' was never awaited`, that's the symptom
 
 ## Concurrent operations: `asyncio.gather`
 
-Run independent coroutines concurrently with `asyncio.gather` — don't await them sequentially when order doesn't matter.
+Run independent coroutines concurrently with `asyncio.gather`: don't await them sequentially when order doesn't matter.
 
 ```python
 # Bad: sequential — total time = sum of all durations
@@ -107,7 +107,7 @@ task = asyncio.create_task(send_email(user.email))
 await task  # wait for it before the function returns
 ```
 
-Fire-and-forget tasks must be stored — if you don't hold a reference, the task may be garbage collected before it completes:
+Fire-and-forget tasks must be stored; if you don't hold a reference, the task may be garbage collected before it completes:
 
 ```python
 # Bad: task may be GC'd
@@ -123,7 +123,7 @@ task.add_done_callback(background_tasks.discard)
 
 ## `asyncio.run` is the entry point
 
-Use `asyncio.run()` to start an async program. Don't manage the event loop manually with `get_event_loop()` / `loop.run_until_complete()` — that API is error-prone and deprecated in 3.10+.
+Use `asyncio.run()` to start an async program. Don't manage the event loop manually with `get_event_loop()` / `loop.run_until_complete()`; that API is error-prone and deprecated in 3.10+.
 
 ```python
 # Bad: manual loop management
@@ -135,7 +135,7 @@ loop.close()
 asyncio.run(main())
 ```
 
-In frameworks (FastAPI, Django Channels, etc.), the framework manages the event loop — don't call `asyncio.run` inside a handler.
+In frameworks (FastAPI, Django Channels, etc.), the framework manages the event loop: don't call `asyncio.run` inside a handler.
 
 ## `async with` and `async for`
 
@@ -156,9 +156,9 @@ async for row in db.execute('SELECT * FROM users'):
 
 ## What to watch for in code review
 
-- `requests`, `time.sleep`, synchronous file I/O inside `async def` — blocks the event loop
-- Coroutine calls without `await` — silently does nothing
+- `requests`, `time.sleep`, synchronous file I/O inside `async def`: blocks the event loop
+- Coroutine calls without `await`: silently does nothing
 - Sequential `await` calls that could be `asyncio.gather`
-- `asyncio.create_task` without storing the reference — task may be GC'd mid-run
+- `asyncio.create_task` without storing the reference: task may be GC'd mid-run
 - `get_event_loop()` instead of `asyncio.run()` at the program entry point
 - Mixing `asyncio.run()` with frameworks that manage their own event loop

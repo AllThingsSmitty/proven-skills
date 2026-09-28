@@ -5,7 +5,7 @@ description: Production Node.js operations advisor. Always use this skill when d
 
 # Production Node.js Operations
 
-A Node.js app that works in development often has silent operational problems in production: it crashes on uncaught errors, drops in-flight requests during deploys, leaks memory over time, or gives load balancers no way to know it's ready. These are all fixable — and they should be addressed before the first production deploy, not after the first incident.
+A Node.js app that works in development often has silent operational problems in production: it crashes on uncaught errors, drops in-flight requests during deploys, leaks memory over time, or gives load balancers no way to know it's ready. These are all fixable, and they should be addressed before the first production deploy, not after the first incident.
 
 ## Graceful shutdown
 
@@ -31,7 +31,7 @@ For database connections, message consumers, or other resources: close them in t
 
 ## Handle uncaught exceptions and unhandled rejections
 
-An uncaught exception or unhandled rejection leaves the process in an indeterminate state. The safest response is to log the error and exit — let the process manager restart you.
+An uncaught exception or unhandled rejection leaves the process in an indeterminate state. The safest response is to log the error and exit: let the process manager restart you.
 
 ```ts
 process.on('uncaughtException', (err) => {
@@ -78,7 +78,7 @@ The readiness check should fail during startup (before the DB connection is esta
 Node.js runs on a single thread. A single instance won't saturate a multi-core machine. Options:
 
 - **Multiple container instances** (preferred in Kubernetes/ECS): each container runs one Node process; the orchestrator handles distribution and restart. Simpler, easier to observe, and matches how most modern infra works.
-- **Node cluster module**: spawns one worker per CPU core inside a single container. Works, but adds complexity — workers share no memory, IPC is manual, and a worker crash doesn't necessarily restart the master.
+- **Node cluster module**: spawns one worker per CPU core inside a single container. Works, but adds complexity: workers share no memory, IPC is manual, and a worker crash doesn't necessarily restart the master.
 - **PM2 cluster mode**: wraps the cluster module with a process manager. Useful when you control the host but not the orchestrator.
 
 In a containerized environment, prefer horizontal scaling over in-process clustering.
@@ -88,10 +88,10 @@ In a containerized environment, prefer horizontal scaling over in-process cluste
 Node.js V8 has a default heap limit (around 1.5GB on 64-bit). If you need more: `NODE_OPTIONS='--max-old-space-size=4096'`. But first investigate whether you actually have a leak.
 
 Common leak sources:
-- **Event emitter listeners not removed** — `emitter.on()` without a corresponding `emitter.off()` or `{ once: true }`
-- **Closures holding large objects** — a callback capturing a large request object that never gets freed
-- **Unbounded caches** — in-memory maps that grow forever with no eviction
-- **Timers not cleared** — `setInterval` holding a reference to objects that should be GC'd
+- **Event emitter listeners not removed**: `emitter.on()` without a corresponding `emitter.off()` or `{ once: true }`
+- **Closures holding large objects**: a callback capturing a large request object that never gets freed
+- **Unbounded caches**: in-memory maps that grow forever with no eviction
+- **Timers not cleared**: `setInterval` holding a reference to objects that should be GC'd
 
 Diagnose with `--inspect` and a heap snapshot in Chrome DevTools, or `clinic.js` for production-safe profiling.
 
@@ -111,18 +111,18 @@ function throwMissing(name: string): never {
 }
 ```
 
-Fail fast at startup if required config is missing — don't let the app start and then crash on the first request that needs the config.
+Fail fast at startup if required config is missing: don't let the app start and then crash on the first request that needs the config.
 
 ## Logging for production
 
-- Use structured logging (JSON) — log aggregators (Datadog, CloudWatch, Splunk) can parse and query it
-- Include a correlation/request ID on every log line — essential for tracing a request across services
+- Use structured logging (JSON): log aggregators (Datadog, CloudWatch, Splunk) can parse and query it
+- Include a correlation/request ID on every log line: essential for tracing a request across services
 - Log at the right level: `error` for actionable failures, `warn` for degraded but functional, `info` for significant events, `debug` for local dev only
 - Never log secrets, PII, or full request/response bodies by default
 
 ## What to watch for in code review
 
-- No `SIGTERM` handler — process will drop in-flight requests on deploy
+- No `SIGTERM` handler: process will drop in-flight requests on deploy
 - `process.exit()` called without flushing logs or closing connections
 - A single `/health` endpoint used for both liveness and readiness
 - `uncaughtException` handler that catches and continues instead of exiting

@@ -13,11 +13,11 @@ Performance work has one rule: measure first. Intuition about where time goes is
 
 2. **Reproduce it.** Find a request, a data set, or a load pattern that reliably triggers the problem. If you can't reproduce it, you can't fix it or verify the fix.
 
-3. **Profile, don't guess.** Run the workload under a profiler and read the flame graph or call tree. The hot path is where to look — not the code you wrote most recently, not the code that looks most suspicious.
+3. **Profile, don't guess.** Run the workload under a profiler and read the flame graph or call tree. The hot path is where to look: not the code you wrote most recently, not the code that looks most suspicious.
 
 4. **Fix the biggest thing first.** A 40% improvement on a function that takes 5% of total time is a 2% overall win. A 20% improvement on the function that takes 70% of total time is a 14% win. Work top-down on the profiler output.
 
-5. **Measure after each change.** Don't batch optimizations and measure once at the end — you won't know which change did what, and you risk optimizing away something that was actually hurting you elsewhere.
+5. **Measure after each change.** Don't batch optimizations and measure once at the end; you won't know which change did what, and you risk optimizing away something that was actually hurting you elsewhere.
 
 ## Database / data access
 
@@ -31,13 +31,13 @@ This is the most common bottleneck in web applications. Check here first.
 
 **Slow query log**: enable it (Postgres: `log_min_duration_statement`, MySQL: `slow_query_log`). A baseline of your slowest queries is the fastest way to find the biggest wins.
 
-**Connection pool exhaustion**: symptoms include requests queuing while waiting for a DB connection; high wait time even though queries are fast. Fix: tune pool size (usually max: 10–20 per app instance is enough — bigger isn't better), or reduce connection hold time.
+**Connection pool exhaustion**: symptoms include requests queuing while waiting for a DB connection; high wait time even though queries are fast. Fix: tune pool size (usually max: 10–20 per app instance is enough; bigger isn't better), or reduce connection hold time.
 
-**Read replicas for read-heavy workloads**: if writes are fast but reads are the bottleneck, offloading reads to a replica can multiply throughput. Be aware of replication lag — don't read from a replica immediately after a write the user just made.
+**Read replicas for read-heavy workloads**: if writes are fast but reads are the bottleneck, offloading reads to a replica can multiply throughput. Be aware of replication lag: don't read from a replica immediately after a write the user just made.
 
 ## Caching
 
-Cache only after measuring — premature caching introduces complexity and bugs (stale data, invalidation races) with no guaranteed payoff.
+Cache only after measuring. Premature caching introduces complexity and bugs (stale data, invalidation races) with no guaranteed payoff.
 
 **What's worth caching:**
 
@@ -47,8 +47,8 @@ Cache only after measuring — premature caching introduces complexity and bugs 
 
 **What's not worth caching:**
 
-- Fast DB queries on indexed columns — the gain is marginal, the complexity is real
-- User-specific data that changes frequently — cache hit rates will be low
+- Fast DB queries on indexed columns: the gain is marginal, the complexity is real
+- User-specific data that changes frequently: cache hit rates will be low
 - Anything where serving stale data would be harmful
 
 **Cache invalidation strategy**: decide before implementing. Options:
@@ -66,19 +66,19 @@ Cache only after measuring — premature caching introduces complexity and bugs 
 
 Common CPU bottlenecks:
 
-- JSON serialization/deserialization — often surprisingly expensive at scale; consider binary formats (protobuf, msgpack) or partial serialization
-- Cryptography — bcrypt is intentionally slow; if you're hashing many passwords per request, rethink the design
-- Regex on large inputs or with catastrophic backtracking — test regex with adversarial inputs before using them on untrusted data
-- Sorting or aggregation on large in-memory datasets — move these operations to the database or streaming layer
-- Memory allocation / GC pressure — excessive object creation in a hot loop causes frequent garbage collection; profile heap allocation, not just CPU
+- JSON serialization/deserialization: often surprisingly expensive at scale; consider binary formats (protobuf, msgpack) or partial serialization
+- Cryptography: bcrypt is intentionally slow; if you're hashing many passwords per request, rethink the design
+- Regex on large inputs or with catastrophic backtracking: test regex with adversarial inputs before using them on untrusted data
+- Sorting or aggregation on large in-memory datasets: move these operations to the database or streaming layer
+- Memory allocation / GC pressure: excessive object creation in a hot loop causes frequent garbage collection; profile heap allocation, not just CPU
 
 ## Memory
 
 **GC pressure** masquerades as CPU load. If GC pause time is high, reducing allocation in the hot path is more effective than optimizing the computation.
 
-**Memory leaks in long-running processes**: common causes include event listeners not removed, caches with no eviction policy, or accumulated references in closures. Profile heap snapshots over time — if heap size grows monotonically and never drops, something is leaking.
+**Memory leaks in long-running processes**: common causes include event listeners not removed, caches with no eviction policy, or accumulated references in closures. Profile heap snapshots over time; if heap size grows monotonically and never drops, something is leaking.
 
-**Buffer/stream large payloads**: loading a 500MB file into memory to process it fails under load. Stream it — process chunks as they arrive instead of buffering the whole thing.
+**Buffer/stream large payloads**: loading a 500MB file into memory to process it fails under load. Stream it: process chunks as they arrive instead of buffering the whole thing.
 
 ## Network / I/O
 
@@ -86,7 +86,7 @@ Common CPU bottlenecks:
 
 **Latency budget awareness**: map out where time goes in a typical request. If your target is 200ms p95 and you're making 4 sequential external calls averaging 60ms each, you've already spent 240ms before doing anything else. Either parallelize or reduce the number of calls.
 
-**Connection reuse**: don't create a new HTTP client per request — reuse connections. Most HTTP client libraries do this by default if you reuse the client instance.
+**Connection reuse**: don't create a new HTTP client per request; reuse connections. Most HTTP client libraries do this by default if you reuse the client instance.
 
 **Payload size**: large response bodies cost bandwidth and serialization time. Check if clients actually use everything in the response. For internal APIs, consider a projection parameter or field filtering.
 
@@ -98,7 +98,7 @@ A minimal load test:
 
 1. Identify the critical path (the endpoint or workflow that must be fast)
 2. Run at the current production load level and verify you hit your latency targets
-3. Find the break point — increase load until latency degrades or errors appear
+3. Find the break point: increase load until latency degrades or errors appear
 4. Fix the bottleneck, repeat
 
-Test on a realistic data set. A database with 100 rows and one with 100 million rows behave completely differently — the former gives you no signal about production behavior.
+Test on a realistic data set. A database with 100 rows and one with 100 million rows behave completely differently; the former gives you no signal about production behavior.

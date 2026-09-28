@@ -1,6 +1,6 @@
 # Proven Skills
 
-A collection of Claude Code skills for software development workflows. Stack-agnostic, principles-based — designed to work across any language or framework.
+A collection of Claude Code skills for software development workflows. Stack-agnostic and principles-based, so they hold up across any language or framework.
 
 [![CI](https://github.com/AllThingsSmitty/proven-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/AllThingsSmitty/proven-skills/actions/workflows/validate.yml)
 
@@ -92,11 +92,11 @@ Every skill is backed by model-graded evals that must pass before merge, and a w
 .\install.ps1 -Global all
 ```
 
-Skills install into `.claude/skills/` in the current directory, or `~/.claude/skills/` with the global flag. Claude Code loads them automatically — no further configuration needed.
+Skills install into `.claude/skills/` in the current directory, or `~/.claude/skills/` with the global flag. Claude Code loads them automatically, no further configuration needed.
 
 ## Usage
 
-Invoke any skill explicitly by name — this is the most reliable way to use them:
+Invoke any skill explicitly by name. This is the most reliable way to use them:
 
 ```
 /debug

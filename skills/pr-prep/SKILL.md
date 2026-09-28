@@ -5,7 +5,7 @@ description: Pre-pull-request review and readiness check. Always use this skill 
 
 # PR Prep
 
-A PR is a unit of communication as much as a unit of code change. Before you open one, review it the way a careful reviewer would — catching the issues you'd want flagged before anyone else has to deal with them.
+A PR is a unit of communication as much as a unit of code change. Before you open one, review it the way a careful reviewer would, catching the issues you'd want flagged before anyone else has to deal with them.
 
 ## Step 1: Read your own diff
 
@@ -19,7 +19,7 @@ What to look for:
 
 - **Unintended changes**: whitespace noise, reformatted files, debug logging left in, commented-out code that shouldn't be there
 - **Incomplete work**: TODOs added but not addressed, stubs that aren't wired up, feature flags that haven't been connected
-- **Sensitive data**: credentials, tokens, API keys, internal hostnames — anything that shouldn't be in source control
+- **Sensitive data**: credentials, tokens, API keys, internal hostnames; anything that shouldn't be in source control
 - **Scope creep**: changes unrelated to the PR's stated purpose. Pull these into a separate PR or a follow-up commit.
 
 ## Step 2: Test coverage check
@@ -68,9 +68,9 @@ If the blast radius is large, say so in the PR description and suggest a staged 
 A good PR description tells the reviewer:
 
 1. **What** changed (a sentence or two)
-2. **Why** it changed (the motivation — link to the issue or explain the context)
+2. **Why** it changed (the motivation: link to the issue or explain the context)
 3. **How** to test or verify it
-4. **What to watch for** — any risky areas, non-obvious decisions, or things the reviewer should look closely at
+4. **What to watch for**: any risky areas, non-obvious decisions, or things the reviewer should look closely at
 
 Structure:
 
@@ -96,7 +96,7 @@ Quick final check:
 
 - [ ] Branch is rebased or merged with the base branch and has no conflicts
 - [ ] CI is green (don't open a PR with a known failing build)
-- [ ] Self-review done — diff read, no debug artifacts, no unintended changes
+- [ ] Self-review done; diff read, no debug artifacts, no unintended changes
 - [ ] PR description written with context, not just "fixes stuff"
-- [ ] Right reviewers assigned — people who know the affected areas
-- [ ] Size is reviewable — if the diff is >500 lines of logic changes, consider splitting
+- [ ] Right reviewers assigned: people who know the affected areas
+- [ ] Size is reviewable: if the diff is >500 lines of logic changes, consider splitting

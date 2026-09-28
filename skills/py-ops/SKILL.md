@@ -5,7 +5,7 @@ description: Production Python operations advisor. Always use this skill when de
 
 # Production Python Operations
 
-Python web apps have two distinct runtime models — synchronous (WSGI) and asynchronous (ASGI) — with different servers, worker models, and operational characteristics. Mixing them up or misconfiguring workers is the most common source of Python production problems.
+Python web apps have two distinct runtime models, synchronous (WSGI) and asynchronous (ASGI), with different servers, worker models, and operational characteristics. Mixing them up or misconfiguring workers is the most common source of Python production problems.
 
 ## WSGI vs ASGI
 
@@ -16,7 +16,7 @@ Python web apps have two distinct runtime models — synchronous (WSGI) and asyn
 | Concurrency model | One request per worker | Many requests per worker (async)            |
 | I/O concurrency   | Via multiple workers   | Via event loop within each worker           |
 
-**WSGI** handles one request per worker at a time. Scale by adding workers. Blocking I/O is fine — each worker blocks independently.
+**WSGI** handles one request per worker at a time. Scale by adding workers. Blocking I/O is fine: each worker blocks independently.
 
 **ASGI** handles many requests per worker concurrently via the event loop. Blocking I/O kills concurrency (see `py-async`). Fewer workers needed, but each worker must be async-safe.
 
@@ -43,7 +43,7 @@ uvicorn myapp.main:app \
   --port 8000
 ```
 
-Or run gunicorn with uvicorn's worker class (recommended for production — gunicorn handles process management, uvicorn handles async):
+Or run gunicorn with uvicorn's worker class (recommended for production; gunicorn handles process management, uvicorn handles async):
 
 ```bash
 gunicorn myapp.main:app \
@@ -52,11 +52,11 @@ gunicorn myapp.main:app \
   --bind 0.0.0.0:8000
 ```
 
-Never use `--reload` in production. It watches the filesystem and restarts workers on every file change — a serious performance and security problem in production.
+Never use `--reload` in production. It watches the filesystem and restarts workers on every file change, which is a serious performance and security problem in production.
 
 ## Graceful shutdown
 
-Gunicorn handles `SIGTERM` gracefully by default — it finishes in-flight requests before exiting. Configure the timeout:
+Gunicorn handles `SIGTERM` gracefully by default: it finishes in-flight requests before exiting. Configure the timeout:
 
 ```bash
 gunicorn --graceful-timeout 30  # wait up to 30s for workers to finish
@@ -101,16 +101,16 @@ async def readiness():
         raise HTTPException(status_code=503, detail='Database unavailable')
 ```
 
-The readiness check should fail during startup (before the DB pool is ready) and during shutdown. Liveness should only fail if the process itself is broken — not if a dependency is down.
+The readiness check should fail during startup (before the DB pool is ready) and during shutdown. Liveness should only fail if the process itself is broken, not if a dependency is down.
 
 ## Memory management
 
 Python's garbage collector handles most memory automatically, but leaks happen:
 
-- **Circular references** — Python's GC handles these, but they delay collection. Use `weakref` for back-references (parent → child → parent patterns).
-- **Large objects in module scope** — loaded once at import time and never freed. Load lazily or on demand.
-- **Unbounded caches** — use `functools.lru_cache(maxsize=N)` not `{}` for in-process caching.
-- **Generator vs list** — for large sequences, use generators (`yield`) to avoid loading everything into memory at once.
+- **Circular references**: Python's GC handles these, but they delay collection. Use `weakref` for back-references (parent → child → parent patterns).
+- **Large objects in module scope**: loaded once at import time and never freed. Load lazily or on demand.
+- **Unbounded caches**: use `functools.lru_cache(maxsize=N)` not `{}` for in-process caching.
+- **Generator vs list**: for large sequences, use generators (`yield`) to avoid loading everything into memory at once.
 
 Diagnose with `tracemalloc` (stdlib) for snapshots or `memory-profiler` for line-by-line profiling:
 
@@ -140,7 +140,7 @@ class Settings(BaseSettings):
 settings = Settings()         # reads from env vars automatically
 ```
 
-`pydantic-settings` validates types, provides defaults, and raises a clear error on startup for missing required values — not on the first request that needs them.
+`pydantic-settings` validates types, provides defaults, and raises a clear error on startup for missing required values, not on the first request that needs them.
 
 ## Logging for production
 
@@ -170,7 +170,7 @@ Or use `structlog` for a production-ready structured logging setup with less boi
 
 - `--reload` flag in production scripts or Dockerfiles
 - ASGI framework (FastAPI/Starlette) deployed with a WSGI server (plain gunicorn without UvicornWorker)
-- No graceful timeout configured — workers killed mid-request during deploys
+- No graceful timeout configured: workers killed mid-request during deploys
 - Required config accessed with `os.environ.get('KEY')` returning `None` silently instead of failing fast
 - Single worker in production (no concurrency, single point of failure)
-- `lru_cache` without `maxsize` (unbounded — will grow forever)
+- `lru_cache` without `maxsize` (unbounded, will grow forever)

@@ -1,11 +1,11 @@
 ---
 name: test-gen
-description: Generate high-quality tests for existing or new code. Always use this skill when asked to write tests, add test coverage, or generate any kind of test — unit, integration, or end-to-end. Use when the user says "write tests for this", "add coverage", "test this function/class/module/endpoint", "generate unit tests", or when a PR or feature is missing test coverage. Read this skill before writing a single test case.
+description: Generate high-quality tests for existing or new code. Always use this skill when asked to write tests, add test coverage, or generate any kind of test: unit, integration, or end-to-end. Use when the user says "write tests for this", "add coverage", "test this function/class/module/endpoint", "generate unit tests", or when a PR or feature is missing test coverage. Read this skill before writing a single test case.
 ---
 
 # Test Gen
 
-Good tests verify behavior, not implementation. They should break when something the user cares about breaks — and only then.
+Good tests verify behavior, not implementation. They should break when something the user cares about breaks, and only then.
 
 ## Before writing tests: understand the contract
 
@@ -23,19 +23,19 @@ If the contract is unclear, clarify it first. A test that verifies vague behavio
 
 ## Choosing the right test level
 
-**Unit tests** — verify a single function or class in isolation
+**Unit tests**: verify a single function or class in isolation
 
 - Fast, precise, easy to diagnose when they fail
 - Best for: pure functions, business logic, data transformation, edge case enumeration
 - Pitfall: over-mocking can make tests verify call sequences rather than behavior
 
-**Integration tests** — verify that components work correctly together
+**Integration tests**: verify that components work correctly together
 
 - Slower, but catch interface mismatches unit tests miss
 - Best for: database queries, external service calls, message passing between modules
-- Use a real dependency (test DB, in-memory queue) where possible — mocked interfaces drift from reality
+- Use a real dependency (test DB, in-memory queue) where possible; mocked interfaces drift from reality
 
-**End-to-end tests** — verify a complete user-visible workflow
+**End-to-end tests**: verify a complete user-visible workflow
 
 - Expensive but highest confidence
 - Reserve for critical paths; don't write these for everything
@@ -46,11 +46,11 @@ When in doubt, prefer the lowest level that actually exercises the behavior you 
 
 For each unit under test, cover:
 
-**Happy path** — the primary success case with typical inputs
-**Boundary conditions** — values at the edges of the input domain (empty, zero, max, min, exactly-one)
-**Error paths** — invalid inputs, missing required data, unexpected types
-**Contract invariants** — properties that must hold across multiple calls or states
-**Known-problematic cases** — off-by-ones, nulls, Unicode edge cases, floating-point equality
+**Happy path**: the primary success case with typical inputs
+**Boundary conditions**: values at the edges of the input domain (empty, zero, max, min, exactly-one)
+**Error paths**: invalid inputs, missing required data, unexpected types
+**Contract invariants**: properties that must hold across multiple calls or states
+**Known-problematic cases**: off-by-ones, nulls, Unicode edge cases, floating-point equality
 
 Don't test the framework or language itself. Don't test private implementation details that could change without breaking the contract.
 
@@ -100,7 +100,7 @@ When testing code that talks to a database, API, or queue:
 
 - Use a real (test/in-memory) instance, not a mock, whenever practical
 - Test the boundary behavior: what happens when the external system returns an error, times out, or returns unexpected data?
-- Don't test the ORM or HTTP client itself — test your code's behavior given what those return
+- Don't test the ORM or HTTP client itself: test your code's behavior given what those return
 
 ## When to write the test
 
