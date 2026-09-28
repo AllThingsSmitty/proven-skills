@@ -1,8 +1,13 @@
 # Local skill installs (created when running install scripts from the repo root)
 .claude/
 
-# Eval run output (written by `claude plugin eval`)
-evals/results/
+# Eval run output (written by `claude plugin eval`), except the weekly
+# with/without results the eval-weekly.yml workflow publishes. Git can't
+# re-include a path under a fully-excluded directory, so this ignores
+# results/ contents by wildcard rather than excluding the directory itself.
+evals/results/*
+!evals/results/published/
+!evals/results/published/**
 
 # macOS
 .DS_Store

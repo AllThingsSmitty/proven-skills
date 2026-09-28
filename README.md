@@ -4,6 +4,8 @@ A collection of Claude Code skills for software development workflows. Stack-agn
 
 [![CI](https://github.com/AllThingsSmitty/proven-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/AllThingsSmitty/proven-skills/actions/workflows/validate.yml)
 
+Every skill is backed by model-graded evals that must pass before merge, and a weekly run scores each one with and without the skill loaded so the improvement is measured, not assumed. See the latest [with/without results](evals/results/published/latest.md).
+
 ## Skills
 
 ### General Dev

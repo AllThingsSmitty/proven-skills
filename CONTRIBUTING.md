@@ -179,6 +179,8 @@ Each eval should have two graders — one for the primary behavior, one for a su
 
 Before merging any skill change, a maintainer will run the **Eval (PR)** workflow from the Actions tab. This runs model-graded evals against the changed skills and fails if any score below 1.0. It requires `ANTHROPIC_API_KEY` to be set as a repo secret. You don't need to run it yourself, but your PR must include passing evals for the workflow to succeed.
 
+Separately, the **Eval (weekly)** workflow runs the full suite every Monday with `--ablation with-without`, comparing every skill against a no-plugin baseline. It doesn't gate anything — it publishes the with/without scores to [`evals/results/published/latest.md`](evals/results/published/latest.md) as a report on what each skill actually contributes.
+
 If a maintainer asks for changes, update your branch and push new commits to the same PR.
 
 Thank you for contributing!
