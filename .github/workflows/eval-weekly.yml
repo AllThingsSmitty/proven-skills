@@ -1,0 +1,60 @@
+name: Eval (weekly)
+
+# Runs the full eval suite with the with/without-plugin comparison and
+# commits the results to evals/results/published/. This is a report, not a
+# gate: --threshold 0 keeps a low score from failing the job.
+#
+# Requires ANTHROPIC_API_KEY as a repo secret.
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # Monday 09:00 ET / 13:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  eval:
+    name: Eval / full suite (with/without)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run full suite (with/without)
+        id: run
+        continue-on-error: true # exit 2 (cost ceiling) still writes partial results worth publishing
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude plugin eval . \
+            --ablation with-without \
+            --model claude-sonnet-5 \
+            --judge-model claude-haiku-4-5 \
+            --threshold 0 \
+            --max-cost-usd 40 \
+            --no-publish \
+            --trust-plugin \
+            --output-dir evals/results/latest-run
+
+      - name: Build published summary
+        if: always()
+        run: |
+          mkdir -p evals/results/published
+          python3 scripts/eval_summary.py evals/results/latest-run/aggregate-result.json > evals/results/published/latest.md
+          cp evals/results/latest-run/aggregate-result.json evals/results/published/latest.json
+          cp evals/results/latest-run/report.html evals/results/published/latest-report.html
+
+      - name: Commit published results
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add evals/results/published/
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Update weekly eval results"
+          git push
