@@ -1,6 +1,6 @@
 ---
 type: regex
-pattern: "edge|boundary|unknown|invalid|negative|zero|other tier|default"
+pattern: "edge case|boundary|other tier"
 flags: "i"
 match: contains
 target: last_message

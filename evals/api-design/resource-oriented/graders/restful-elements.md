@@ -1,6 +1,6 @@
 ---
 type: regex
-pattern: "resource|GET|POST|PATCH|PUT|DELETE|endpoint|status code|noun"
+pattern: "endpoint|status code|RESTful|REST API|HTTP method"
 flags: "i"
 match: contains
 target: last_message
