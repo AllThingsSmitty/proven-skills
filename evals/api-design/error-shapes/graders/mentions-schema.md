@@ -1,6 +1,6 @@
 ---
 type: regex
-pattern: "schema|body|field|consistent|envelope|type|code|message|detail"
+pattern: "schema|envelope"
 flags: "i"
 match: contains
 target: last_message

@@ -17,6 +17,7 @@ PROMPT_FRONTMATTER_REQUIRED = {"name", "tags", "runs", "max_turns"}
 GRADER_TYPE_REQUIRED = {
     "llm": {"type", "criteria"},
     "regex": {"type", "pattern", "match", "target"},
+    "tool_used": {"type", "tool", "input_match"},
 }
 
 MIN_EVALS = 2

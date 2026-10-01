@@ -1,6 +1,6 @@
 ---
 type: regex
-pattern: "diff|changes|coverage|migration|test|review|checklist"
+pattern: "diff|checklist|migration|coverage"
 flags: "i"
 match: contains
 target: last_message
