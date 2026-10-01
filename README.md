@@ -112,3 +112,7 @@ Run `/skills` in Claude Code to see all available skills and their descriptions.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add skills, write evals, and submit pull requests.
+
+## License
+
+Licensed under MIT. See [LICENSE](LICENSE).
