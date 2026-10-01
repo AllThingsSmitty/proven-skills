@@ -166,7 +166,23 @@ criteria: |
 ---
 ```
 
-Each eval should have two graders: one for the primary behavior, one for a supporting behavior or negative criterion. Keep graders focused, one thing per grader, stated as a verifiable claim about the response.
+Each eval should have at least three graders:
+
+1. **Primary LLM grader** — checks the core behavioral criterion.
+2. **Supporting grader** — checks a secondary behavior or negative criterion, using either `type: llm` or `type: regex`. For regex graders, use patterns specific enough that they wouldn't match a generic response; prefer multi-word phrases over single common words.
+3. **`skill-fired` grader** — verifies the skill was actually invoked:
+
+```markdown
+---
+type: tool_used
+tool: Skill
+input_match: '"skill"\s*:\s*"(?:[\w-]+:)?your-skill-name"'
+---
+```
+
+Replace `your-skill-name` with the skill's directory name (e.g. `debug`, `api-design`). This grader doesn't count toward the score in two-arm weekly runs, but it does count in PR-gated runs and is the clearest signal that the skill's trigger description is working.
+
+Keep graders focused: one thing per grader, stated as a verifiable claim about the response.
 
 ## Pull Request Guidelines
 
