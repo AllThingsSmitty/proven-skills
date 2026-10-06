@@ -7,8 +7,10 @@ name: Eval (weekly)
 # Requires ANTHROPIC_API_KEY as a repo secret.
 
 on:
-  schedule:
-    - cron: "0 13 * * 1" # Monday 09:00 ET / 13:00 UTC
+  # Schedule paused until ANTHROPIC_API_KEY is configured; without it every
+  # run fails auth and publishes an empty result. Re-enable with the cron below.
+  # schedule:
+  #   - cron: "0 13 * * 1" # Monday 09:00 ET / 13:00 UTC
   workflow_dispatch: {}
 
 permissions:
