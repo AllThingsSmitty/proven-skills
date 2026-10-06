@@ -33,12 +33,12 @@ jobs:
   # ── 1. Detect which skills changed ─────────────────────────────────────────
   detect:
     name: Detect changed skills
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned: ubuntu-latest moves to 26.04 in Nov 2026; bump deliberately after testing
     outputs:
       skills: ${{ steps.diff.outputs.skills }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -69,14 +69,14 @@ jobs:
     name: Eval / ${{ matrix.skill }}
     needs: detect
     if: needs.detect.outputs.skills != '[]' && needs.detect.outputs.skills != ''
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned: ubuntu-latest moves to 26.04 in Nov 2026; bump deliberately after testing
     strategy:
       fail-fast: false          # keep running other skills if one fails
       matrix:
         skill: ${{ fromJson(needs.detect.outputs.skills) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
@@ -97,7 +97,7 @@ jobs:
       # Upload the JSON result as an artifact so grader details are inspectable.
       - name: Upload result
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: eval-${{ matrix.skill }}
           path: evals/results/${{ matrix.skill }}.json
